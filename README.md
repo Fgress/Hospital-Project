@@ -5,7 +5,7 @@ The `README` file in the root directory should have a project description. Each 
 
 ### Folder content
 
- - `src` contains code developed for the project, including analysis scripts.
  - `data` contains data used for the analysis.
  - `doc` contains Rmarkdown files to generate the report, and the report itself.
  - `misc` contains miscellaneous files, such as plots and meeting notes.
+ - `src` contains code developed for the project, including analysis scripts.
