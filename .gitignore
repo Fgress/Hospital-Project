@@ -8,7 +8,7 @@
 
 # User-specific files
 .Ruserdata
-data/
+data/Ametop-PE data(new-Alex)(1control 2study).xlsx
 
 # Example code in package build process
 *-Ex.R
