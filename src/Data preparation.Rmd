@@ -4,19 +4,24 @@ output:
   html_document: default
 ---
 
-## Data cleaning
+## Import libraries
 
 ```{r}
 library("readxl")
 library(dplyr)
+library(ggplot2)
+```
 
-#Upload data
+## Data cleaning
+
+```{r}
+# Read data
 data <- read_excel("data/Ametop-PE data(new-Alex)(1control 2study).xlsx")
 
-#Remove withdrawn patients
+# Remove withdrawn patients
 data <- data[data$`Withdrawn after consent?` != "Yes", ]
 
-#Remove unnecessary variables
+# Remove unnecessary variables
 data <- select(data, 
                -`Elective surgery requiring IV?`,
                -`ASA I or II?`,
@@ -83,6 +88,13 @@ data$`Match Responses` <- ifelse(data$`Observer Number` == data$`FPS-R Number`, 
 ```
 
 ```{r}
-#Verify data
+# Verify data
 head(data)
+```
+
+## Data analysis
+
+```{r}
+# Compare the sample sizes between the control group and the study group
+table(data$Randomization)
 ```
