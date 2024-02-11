@@ -16,7 +16,7 @@ library(ggplot2)
 
 ```{r}
 # Read data
-data <- read_excel("data/Ametop-PE data(new-Alex)(1control 2study).xlsx")
+data <- read_excel("../data/Ametop-PE data(new-Alex)(1control 2study).xlsx")
 
 # Remove withdrawn patients
 data <- data[data$`Withdrawn after consent?` != "Yes", ]
@@ -54,6 +54,7 @@ missing_values_summary <- data %>%
 print(missing_values_summary)
 
 ```
+
 ```{r}
 #Shorten the data
 data$`Reaction to skin puncture` <- gsub("^Slight.*", "Slight Pain", data$`Reaction to skin puncture`)
