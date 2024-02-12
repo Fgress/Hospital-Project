@@ -7,9 +7,12 @@ output:
 ## Import libraries
 
 ```{r}
-library("readxl")
+library(readxl)
 library(dplyr)
 library(ggplot2)
+library(GGally)
+library(reshape)
+library(nnet)
 ```
 
 ## Data cleaning
@@ -98,4 +101,40 @@ head(data)
 ```{r}
 # Compare the sample sizes between the control group and the study group
 table(data$Randomization)
+```
+
+# Do age, gender, the practitioner's role (anesthetist or resident), the number of IV attempts, and the needle gauge used (24 or 22 gauge) influence the level of pain experienced by pediatric patients during IV insertion?
+
+```{r}
+# Correlation Matrix: age, sex, practitioner, number of IV attempts, Ametop or vapocoolant spray, needle gauge (22 or 24), and their interaction with the assigned randomization group
+data$sex <- ifelse(data$Sex == "Male", 1, 0)
+data$practitioner <- ifelse(data$Practitioner == "Anesthetist", 1, 0)
+
+numerical_data <- data %>% select(Age, sex, practitioner, `Number of IV attempts`, Randomization, `Needle gauge`, `Observer Number`, `FPS-R Number`)
+cors <- numerical_data %>% cor(use = "complete.obs")
+melted_cors <- suppressWarnings(melt(cors, na.rm = TRUE))
+print(melted_cors)
+
+ggplot(melted_cors, aes(melted_cors[,1], melted_cors[,2], fill = value)) +
+  geom_tile(color = 'white') +
+  scale_fill_gradient2(low = 'blue', high = 'red', mid = 'white', midpoint = 0, limit = c(-1, 1), space = 'Lab', name = 'Pearson r') +
+  geom_text(aes(label = round(value, 2)), color = "black", size = 4) +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, size = 10, hjust = 1)) +
+  xlab("") + ylab("")
+```
+
+```{r}
+# Multinomial logistic regression on `Observer Number`: 
+# Observer Number ~ Age + sex + practitioner + `Number of IV attempts` + `Randomization` + `Needle gauge`
+model_observer <- multinom(`Observer Number` ~ Age + sex + practitioner + `Number of IV attempts` + Randomization + `Needle gauge` + Age * `Needle gauge` + practitioner * `Needle gauge`, data=data)
+
+summary(model_observer)
+```
+
+```{r}
+# Multinomial logistic regression on `FPS-R Number`: 
+# FPS-R Number ~ Age + sex + practitioner + `Number of IV attempts` + `Randomization` + `Needle gauge`
+model_FPSR <- multinom(`FPS-R Number` ~ Age + sex + practitioner + `Number of IV attempts` + Randomization + `Needle gauge` + Age * `Needle gauge` + practitioner * `Needle gauge`, data=data)
+
+summary(model_FPSR)
 ```
