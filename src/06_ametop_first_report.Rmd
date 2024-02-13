@@ -13,6 +13,7 @@ library(ggplot2)
 library(GGally)
 library(reshape)
 library(nnet)
+library(stats)
 ```
 
 ## Data cleaning
@@ -111,7 +112,6 @@ table(data$Randomization)
 data$Match_Responses_Binary <- ifelse(data$`Match Responses` == "Yes", 1, 0)
 
 
-library(stats)
 
 # Fitting the logistic model with interactions 
 logit_model <- glm(Match_Responses_Binary ~ data$`Age` + data$`Sex` + data$`Practitioner` + data$`Number of IV attempts` + data$`Needle gauge` + data$`Age`*data$`Sex`, 
