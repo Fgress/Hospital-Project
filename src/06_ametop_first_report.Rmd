@@ -103,6 +103,93 @@ head(data)
 table(data$Randomization)
 ```
 
+
+
+
+```{r}
+# Recoding 'Match Responses' to binary (0 = No, 1 = Yes)
+data$Match_Responses_Binary <- ifelse(data$`Match Responses` == "Yes", 1, 0)
+
+
+library(stats)
+
+# Fitting the logistic model with interactions 
+logit_model <- glm(Match_Responses_Binary ~ data$`Age` + data$`Sex` + data$`Practitioner` + data$`Number of IV attempts` + data$`Needle gauge` + data$`Age`*data$`Sex`, 
+                   family = binomial(link = "logit"), data = data)
+```
+
+
+
+
+```{r}
+#summary of the logistic model
+summary(logit_model)
+```
+```{r}
+# Calculating residuals
+dev_res <- residuals(logit_model, type = "deviance")
+
+# Plotting residuals
+plot(dev_res, ylab = "Residuals", xlab = "Index", main = "Residuals Plot")
+abline(h = 0, col = "red")
+
+# Calculating fitted probabilities
+fitted_probs <- predict(logit_model, type = "response")
+
+# Plotting residuals vs. fitted values
+plot(fitted_probs, dev_res, ylab = "Residuals", xlab = "Fitted Probabilities", main = "Residuals vs. Fitted Values")
+abline(h = 0, col = "red")
+
+
+# QQ plot of residuals(general)
+qqnorm(dev_res)
+qqline(dev_res, col = "red")
+title("QQ Plot of Residuals")
+
+```
+
+```{r}
+# Summarize "Any side effects observed?" Column
+side_effects_observed_summary <- table(data$`Any side effects observed?`)
+
+# Calculate percentages
+percentages <- round(100 * side_effects_observed_summary / sum(side_effects_observed_summary), 1)
+
+# Generate labels with percentages
+labels <- paste(names(side_effects_observed_summary), "-", percentages, "%", sep="")
+
+# Pie Chart for "Any side effects observed?"
+pie(side_effects_observed_summary,
+    main = "Proportion of Patients with Any Observed Side Effects",
+    col = c("lightgreen", "lightcoral"))
+
+# Pie Chart for "Any side effects observed?" with percentages
+pie(side_effects_observed_summary,
+    main = "Proportion of Patients with Any Observed Side Effects",
+    col = c("lightgreen", "lightcoral"),
+    labels = labels)
+```
+
+
+
+
+```{r}
+# Assuming the column name is "Observed side effects"
+specific_side_effects_summary <- table(data$`Observed side effects`)
+
+
+# Creating a pie chart with the "Observed side effects"
+pie(specific_side_effects_summary,
+    main = "Distribution of Specific Side Effects",
+    col = rainbow(length(specific_side_effects_summary)),
+    labels = paste(names(specific_side_effects_summary), ": ", 
+                   round(100 * specific_side_effects_summary / sum(specific_side_effects_summary), 1), "%", sep=""))
+
+
+
+
+
+```
 # Do age, gender, the practitioner's role (anesthetist or resident), the number of IV attempts, and the needle gauge used (24 or 22 gauge) influence the level of pain experienced by pediatric patients during IV insertion?
 
 ```{r}
@@ -138,3 +225,4 @@ model_FPSR <- multinom(`FPS-R Number` ~ Age + sex + practitioner + `Number of IV
 
 summary(model_FPSR)
 ```
+
