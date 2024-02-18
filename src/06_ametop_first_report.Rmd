@@ -8,12 +8,11 @@ output:
 
 ```{r}
 library(readxl)
-library(dplyr)
 library(ggplot2)
-library(GGally)
-library(reshape)
-library(nnet)
-library(stats)
+library(mgcv)
+library(tidyverse)
+ggplot2::theme_set(theme_classic())
+options(repr.plot.width=15, repr.plot.height=7.5)
 ```
 
 ## Data cleaning
@@ -44,8 +43,6 @@ data <- select(data,
                -`Withdrawn after consent?`,
                -`Reason for withdrawal`,
                -`Other reason for withdrawal`)
-
-
 ```
 
 ```{r}
@@ -56,13 +53,33 @@ missing_values_summary <- data %>%
 
 # No missing values found
 print(missing_values_summary)
-
 ```
 
 ```{r}
-#Shorten the data
-data$`Reaction to skin puncture` <- gsub("^Slight.*", "Slight Pain", data$`Reaction to skin puncture`)
+# Remove rows with missing notes
+data_clean <- data[!is.na(data$Notes), ]
+print(data_clean)
 
+# Define keywords that suggest a mismatch between FPS-R score and observer score
+mismatch_keywords <- c("mischievous", "histrionic", "game", "no pain", "quietly and calmly", "did not withdraw",
+                       "really hurt", "did not feel", "said owee", "dramatic personality", "scored a 10 while smiling",
+                       "said owe but did not withdraw", "did not react in keeping with a score of 10")
+
+# Create a pattern string to search for any of the keywords
+pattern <- paste(mismatch_keywords, collapse = "|")
+
+# Use grep to find rows that match the pattern
+rows_to_exclude <- grep(pattern, data$Notes, ignore.case = TRUE)
+print(data[rows_to_exclude,])
+
+# Exclude these rows
+data <- data[-rows_to_exclude, ]
+print(data)
+```
+
+```{r}
+# Shorten the data
+data$`Reaction to skin puncture` <- gsub("^Slight.*", "Slight Pain", data$`Reaction to skin puncture`)
 data$`Reaction to skin puncture` <- gsub("^Severe.*", "Severe Pain", data$`Reaction to skin puncture`)
 
 # Verify the changes
@@ -72,24 +89,12 @@ table(data$`Reaction to skin puncture`)
 ## Data preprocessing
 
 ```{r}
-# Creating new variables for the dataset
-
-# Create 'Observer Number'
+# Create new variables 'Observer Number' for the dataset
 data$`Observer Number` <- case_when(
   data$`Reaction to skin puncture` == "None" ~ 1,
   data$`Reaction to skin puncture` == "Slight Pain" ~ 2,
   data$`Reaction to skin puncture` == "Severe Pain" ~ 3
 )
-
-# Create 'FPS-R Number'
-data$`FPS-R Number` <- case_when(
-  data$`FPS-R score` %in% c(0, 2) ~ 1,
-  data$`FPS-R score` %in% c(4, 6) ~ 2,
-  data$`FPS-R score` %in% c(8, 10) ~ 3
-)
-
-# 3. Create 'Match Responses'
-data$`Match Responses` <- ifelse(data$`Observer Number` == data$`FPS-R Number`, "Yes", "No")
 ```
 
 ```{r}
@@ -104,64 +109,85 @@ head(data)
 table(data$Randomization)
 ```
 
-
-
-
+# Histograms for FPS-R score
 ```{r}
-# Recoding 'Match Responses' to binary (0 = No, 1 = Yes)
-data$Match_Responses_Binary <- ifelse(data$`Match Responses` == "Yes", 1, 0)
+data %>% 
+    ggplot(aes(x = Age, y = `FPS-R score`)) +
+    geom_point(size=4) +
+    theme(text = element_text(size=25)) +
+    scale_y_continuous(breaks=0:10) +
+    labs(x = "Age",
+         y = "FPS-R score")
 
-
-
-# Fitting the logistic model with interactions 
-logit_model <- glm(Match_Responses_Binary ~ data$`Age` + data$`Sex` + data$`Practitioner` + data$`Number of IV attempts` + data$`Needle gauge` + data$`Age`*data$`Sex`, 
-                   family = binomial(link = "logit"), data = data)
-```
-
-
-
-
-```{r}
-#summary of the logistic model
-summary(logit_model)
-```
-```{r}
-# Calculating residuals
-dev_res <- residuals(logit_model, type = "deviance")
-
-# Plotting residuals
-plot(dev_res, ylab = "Residuals", xlab = "Index", main = "Residuals Plot")
-abline(h = 0, col = "red")
-
-# Calculating fitted probabilities
-fitted_probs <- predict(logit_model, type = "response")
-
-# Plotting residuals vs. fitted values
-plot(fitted_probs, dev_res, ylab = "Residuals", xlab = "Fitted Probabilities", main = "Residuals vs. Fitted Values")
-abline(h = 0, col = "red")
-
-
-# QQ plot of residuals(general)
-qqnorm(dev_res)
-qqline(dev_res, col = "red")
-title("QQ Plot of Residuals")
-
+# The younger the age, the more concentrated the distribution of pain scores.
 ```
 
 ```{r}
-# Summarize "Any side effects observed?" Column
+data %>% 
+    ggplot(aes(x = Sex, y = `FPS-R score`)) +
+    geom_point(size=4) +
+    theme(text = element_text(size=25)) +
+    scale_y_continuous(breaks=0:10) +
+    labs(x = "Sex",
+         y = "FPS-R score")
+```
+
+```{r}
+data %>% 
+    ggplot(aes(x = `Practitioner`, y = `FPS-R score`)) +
+    geom_point(size=4) +
+    theme(text = element_text(size=25)) +
+    scale_y_continuous(breaks=0:10) +
+    labs(x = "Practitioner",
+         y = "FPS-R score")
+```
+
+```{r}
+data %>% 
+    ggplot(aes(x = `Number of IV attempts`, y = `FPS-R score`)) +
+    geom_point(size=4) +
+    theme(text = element_text(size=25)) +
+    scale_y_continuous(breaks=0:10) +
+    labs(x = "Number of IV attempts",
+         y = "FPS-R score")
+# The fewer the number of IV injections, the more concentrated the high pain scores are.
+```
+
+```{r}
+data %>% 
+    ggplot(aes(x = `Needle gauge`, y = `FPS-R score`)) +
+    geom_point(size=4) +
+    theme(text = element_text(size=25)) +
+    scale_y_continuous(breaks=0:10) +
+    labs(x = "Needle gauge",
+         y = "FPS-R score")
+```
+
+# Linear model for FPS-R score
+```{r}
+# Linear model for FPS-R score
+data$Sex <- as.factor(data$Sex)
+data$Practitioner <- as.factor(data$Practitioner)
+data$`Needle gauge` <- as.factor(data$`Needle gauge`)
+linear_model <- lm(`FPS-R score` ~ Age + Sex + Practitioner + `Number of IV attempts` + `Needle gauge`, data = data)
+summary(linear_model)
+```
+
+```{r}
+# Plot linear model for FPS-R score
+plot(linear_model)
+```
+
+# Pie chart for Observed side effects (Yes/No)
+```{r}
+# Summarize "Any side effects observed?" column
 side_effects_observed_summary <- table(data$`Any side effects observed?`)
 
 # Calculate percentages
 percentages <- round(100 * side_effects_observed_summary / sum(side_effects_observed_summary), 1)
 
 # Generate labels with percentages
-labels <- paste(names(side_effects_observed_summary), "-", percentages, "%", sep="")
-
-# Pie Chart for "Any side effects observed?"
-pie(side_effects_observed_summary,
-    main = "Proportion of Patients with Any Observed Side Effects",
-    col = c("lightgreen", "lightcoral"))
+labels <- paste(names(side_effects_observed_summary), " - ", percentages, "%", sep="")
 
 # Pie Chart for "Any side effects observed?" with percentages
 pie(side_effects_observed_summary,
@@ -170,59 +196,51 @@ pie(side_effects_observed_summary,
     labels = labels)
 ```
 
-
-
-
+# Pie chart for Observed side effects (Redness, Itching, Puffiness, pain)
 ```{r}
-# Assuming the column name is "Observed side effects"
-specific_side_effects_summary <- table(data$`Observed side effects`)
+# Filter out missing values and create a data frame with only the side effects
+side_effects_data <- data.frame(SideEffects = na.omit(data$`Observed side effects`))
 
+# Define the categorization function
+categorize_effects <- function(effect) {
+  category <- character(0)
+  if (grepl("redness|pink", tolower(effect))) {
+    category <- c(category, "Redness")
+  }
+  if (grepl("itchy|prurit", tolower(effect))) {
+    category <- c(category, "Itching")
+  }
+  if (grepl("puffy", tolower(effect))) {
+    category <- c(category, "Puffiness")
+  }
+  if (grepl("pain", tolower(effect))) {
+    category <- c(category, "Pain")
+  }
+  if (length(category) == 0) {
+    return("Other")
+  }
+  return(category)
+}
 
-# Creating a pie chart with the "Observed side effects"
-pie(specific_side_effects_summary,
-    main = "Distribution of Specific Side Effects",
-    col = rainbow(length(specific_side_effects_summary)),
-    labels = paste(names(specific_side_effects_summary), ": ", 
-                   round(100 * specific_side_effects_summary / sum(specific_side_effects_summary), 1), "%", sep=""))
+# Apply the categorization function and create a list of categories for each side effect
+side_effects_data$Categories <- sapply(side_effects_data$SideEffects, categorize_effects, USE.NAMES=FALSE)
 
+# Flatten the list into a vector
+all_categories <- unlist(side_effects_data$Categories)
 
+# Count the occurrences of each category
+category_counts <- table(all_categories)
 
+# Calculate the percentage for each category
+percentages <- round(category_counts / sum(category_counts) * 100, 1)
 
+# Create labels that include both the category name and the percentage
+labels <- paste(names(category_counts), " - ", percentages, "%", sep="")
 
+# Create a pie chart with percentages
+pie(category_counts,
+    labels = labels,
+    main = "Side Effects Distribution",
+    col = rainbow(length(category_counts)),
+    cex = 0.8)
 ```
-# Do age, gender, the practitioner's role (anesthetist or resident), the number of IV attempts, and the needle gauge used (24 or 22 gauge) influence the level of pain experienced by pediatric patients during IV insertion?
-
-```{r}
-# Correlation Matrix: age, sex, practitioner, number of IV attempts, Ametop or vapocoolant spray, needle gauge (22 or 24), and their interaction with the assigned randomization group
-data$sex <- ifelse(data$Sex == "Male", 1, 0)
-data$practitioner <- ifelse(data$Practitioner == "Anesthetist", 1, 0)
-
-numerical_data <- data %>% select(Age, sex, practitioner, `Number of IV attempts`, Randomization, `Needle gauge`, `Observer Number`, `FPS-R Number`)
-cors <- numerical_data %>% cor(use = "complete.obs")
-melted_cors <- suppressWarnings(melt(cors, na.rm = TRUE))
-print(melted_cors)
-
-ggplot(melted_cors, aes(melted_cors[,1], melted_cors[,2], fill = value)) +
-  geom_tile(color = 'white') +
-  scale_fill_gradient2(low = 'blue', high = 'red', mid = 'white', midpoint = 0, limit = c(-1, 1), space = 'Lab', name = 'Pearson r') +
-  geom_text(aes(label = round(value, 2)), color = "black", size = 4) +
-  theme(axis.text.x = element_text(angle = 45, vjust = 1, size = 10, hjust = 1)) +
-  xlab("") + ylab("")
-```
-
-```{r}
-# Multinomial logistic regression on `Observer Number`: 
-# Observer Number ~ Age + sex + practitioner + `Number of IV attempts` + `Randomization` + `Needle gauge`
-model_observer <- multinom(`Observer Number` ~ Age + sex + practitioner + `Number of IV attempts` + Randomization + `Needle gauge` + Age * `Needle gauge` + practitioner * `Needle gauge`, data=data)
-
-summary(model_observer)
-```
-
-```{r}
-# Multinomial logistic regression on `FPS-R Number`: 
-# FPS-R Number ~ Age + sex + practitioner + `Number of IV attempts` + `Randomization` + `Needle gauge`
-model_FPSR <- multinom(`FPS-R Number` ~ Age + sex + practitioner + `Number of IV attempts` + Randomization + `Needle gauge` + Age * `Needle gauge` + practitioner * `Needle gauge`, data=data)
-
-summary(model_FPSR)
-```
-
