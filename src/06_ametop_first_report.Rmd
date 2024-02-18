@@ -224,6 +224,8 @@ categorize_effects <- function(effect) {
 
 # Apply the categorization function and create a list of categories for each side effect
 side_effects_data$Categories <- sapply(side_effects_data$SideEffects, categorize_effects, USE.NAMES=FALSE)
+print(data.frame(side_effects_data$SideEffects,
+                 sapply(side_effects_data$Categories, paste, collapse = ", ")))
 
 # Flatten the list into a vector
 all_categories <- unlist(side_effects_data$Categories)
