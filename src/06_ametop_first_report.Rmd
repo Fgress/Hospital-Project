@@ -179,10 +179,14 @@ summary(linear_model)
 plot(linear_model)
 ```
 
-# Pie chart for Observed side effects (Yes/No)
+# Pie chart for Observed side effects (No / Yes - Ametop alone / Yes - Ametop + vapocoolant spray)
 ```{r}
 # Summarize "Any side effects observed?" column
-side_effects_observed_summary <- table(original_data$`Any side effects observed?`)
+side_effects_observed_summary <- table(
+  ifelse(original_data$`Any side effects observed?` == "No", "No Side Effect",
+         ifelse(original_data$Randomization == 1, "Side Effect (Ametop alone)",
+                "Side Effect (Ametop + vapocoolant spray)"))
+)
 
 # Calculate percentages
 percentages <- round(100 * side_effects_observed_summary / sum(side_effects_observed_summary), 1)
@@ -193,8 +197,9 @@ labels <- paste(names(side_effects_observed_summary), " - ", percentages, "%", s
 # Pie Chart for "Any side effects observed?" with percentages
 pie(side_effects_observed_summary,
     main = "Proportion of Patients with Any Observed Side Effects",
-    col = c("lightgreen", "lightcoral"),
-    labels = labels)
+    col = rainbow(length(category_counts)),
+    labels = labels,
+    cex = 0.65)
 ```
 
 # Pie chart for Observed side effects (Redness, Itching, Pain, Puffiness)
