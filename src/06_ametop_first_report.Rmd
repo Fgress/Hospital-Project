@@ -196,30 +196,45 @@ pie(side_effects_observed_summary,
     labels = labels)
 ```
 
-# Pie chart for Observed side effects (Redness, Itching, Puffiness, pain)
+# Pie chart for Observed side effects (Redness, Itching, Pain)
 ```{r}
 # Filter out missing values and create a data frame with only the side effects
 side_effects_data <- data.frame(SideEffects = na.omit(data$`Observed side effects`))
 
 # Define the categorization function
 categorize_effects <- function(effect) {
-  category <- character(0)
-  if (grepl("redness|pink", tolower(effect))) {
-    category <- c(category, "Redness")
+  effect_lower <- tolower(effect)
+  categories <- list(
+    Redness = "red|redness|pink",
+    Itching = "itchy|pruritic|pruritis",
+    Pain = "pain|painful"
+  )
+  
+  identified_categories <- character(0)
+  
+  # Negation patterns
+  pattern_start <- "\\b(no|not)\\s+("
+  pattern_middle <- ")\\b|(no|not)\\s+\\w+\\s+or\\s+("
+  pattern_end <- ")"
+  
+  for (category_name in names(categories)) {
+    symptom_pattern <- categories[[category_name]]
+    
+    # Check for the symptom but exclude if negated
+    if (grepl(symptom_pattern, effect_lower)) {
+      negation_pattern <- paste0(pattern_start, symptom_pattern, pattern_middle, symptom_pattern, pattern_end)
+      if (!grepl(negation_pattern, effect_lower)) {
+        identified_categories <- c(identified_categories, category_name)
+      }
+    }
   }
-  if (grepl("itchy|prurit", tolower(effect))) {
-    category <- c(category, "Itching")
-  }
-  if (grepl("puffy", tolower(effect))) {
-    category <- c(category, "Puffiness")
-  }
-  if (grepl("pain", tolower(effect))) {
-    category <- c(category, "Pain")
-  }
-  if (length(category) == 0) {
+  
+  # Return "Other" if no category is found
+  if (length(identified_categories) == 0) {
     return("Other")
   }
-  return(category)
+  
+  return(identified_categories)
 }
 
 # Apply the categorization function and create a list of categories for each side effect
