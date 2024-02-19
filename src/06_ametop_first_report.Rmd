@@ -205,7 +205,8 @@ categorize_effects <- function(effect) {
   categories <- list(
     Redness = "red|redness|pink",
     Itching = "itchy|pruritic|pruritis",
-    Pain = "pain|painful"
+    Pain = "pain|painful",
+    Puffiness = "puffy"
   )
   
   identified_categories <- character(0)
