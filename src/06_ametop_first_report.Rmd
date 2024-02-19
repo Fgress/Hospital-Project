@@ -19,7 +19,10 @@ options(repr.plot.width=15, repr.plot.height=7.5)
 
 ```{r}
 # Read data
-data <- read_excel("../data/Ametop-PE data(new-Alex)(1control 2study).xlsx")
+original_data <- read_excel("../data/Ametop-PE data(new-Alex)(1control 2study).xlsx")
+
+# Save original_data for side effects analysis
+data <- original_data
 
 # Remove withdrawn patients
 data <- data[data$`Withdrawn after consent?` != "Yes", ]
@@ -57,19 +60,19 @@ print(missing_values_summary)
 
 ```{r}
 # Print rows with notes
-print(data[!is.na(data$Notes), ])
+# print(data[!is.na(data$Notes), ])
 
 # Define keywords that suggest a mismatch between FPS-R score and observer score
-mismatch_keywords <- c("mischievous", "histrionic", "game", "understand scoring scale",
-                       "said ow", "did not feel", "dramatic")
+# mismatch_keywords <- c("mischievous", "histrionic", "game", "understand scoring scale",
+#                        "said ow", "did not feel", "dramatic")
 
 # Create a pattern string to search for any of the keywords
-pattern <- paste(mismatch_keywords, collapse = "|")
+# pattern <- paste(mismatch_keywords, collapse = "|")
 
 # Use grep to find rows that match the pattern
-rows_to_exclude <- grep(pattern, data$Notes, ignore.case = TRUE)
-print(data[rows_to_exclude,])
-print(data[-rows_to_exclude,])
+# rows_to_exclude <- grep(pattern, data$Notes, ignore.case = TRUE)
+# print(data[rows_to_exclude,])
+# print(data[-rows_to_exclude,])
 ```
 
 ```{r}
@@ -179,7 +182,7 @@ plot(linear_model)
 # Pie chart for Observed side effects (Yes/No)
 ```{r}
 # Summarize "Any side effects observed?" column
-side_effects_observed_summary <- table(data$`Any side effects observed?`)
+side_effects_observed_summary <- table(original_data$`Any side effects observed?`)
 
 # Calculate percentages
 percentages <- round(100 * side_effects_observed_summary / sum(side_effects_observed_summary), 1)
@@ -197,7 +200,7 @@ pie(side_effects_observed_summary,
 # Pie chart for Observed side effects (Redness, Itching, Pain, Puffiness)
 ```{r}
 # Filter out missing values and create a data frame with only the side effects
-side_effects_data <- data.frame(SideEffects = na.omit(data$`Observed side effects`))
+side_effects_data <- data.frame(SideEffects = na.omit(original_data$`Observed side effects`))
 
 # Define the categorization function
 categorize_effects <- function(effect) {
@@ -241,6 +244,27 @@ side_effects_data$Categories <- sapply(side_effects_data$SideEffects, categorize
 print(data.frame(side_effects_data$SideEffects,
                  sapply(side_effects_data$Categories, paste, collapse = ", ")))
 
+# Pie Chart 1
+# Combination Categories
+all_combination_categories <- sapply(side_effects_data$Categories, paste, collapse = " + ")
+
+# Count the occurrences of each category
+combination_category_counts <- table(all_combination_categories)
+
+# Calculate the percentage for each category
+combination_category_percentages <- round(combination_category_counts / sum(combination_category_counts) * 100, 1)
+
+# Create labels that include both the category name and the percentage
+combination_labels <- paste(names(combination_category_counts), " - ", combination_category_percentages, "%", sep="")
+
+# Create a pie chart with percentages
+pie(combination_category_counts,
+    labels = combination_labels,
+    main = "Combination Side Effects Distribution",
+    col = rainbow(length(combination_category_counts)),
+    cex = 0.8)
+
+# Pie Chart 2
 # Flatten the list into a vector
 all_categories <- unlist(side_effects_data$Categories)
 
@@ -256,7 +280,7 @@ labels <- paste(names(category_counts), " - ", percentages, "%", sep="")
 # Create a pie chart with percentages
 pie(category_counts,
     labels = labels,
-    main = "Side Effects Distribution",
+    main = "Individual Side Effects Distribution",
     col = rainbow(length(category_counts)),
     cex = 0.8)
 ```
