@@ -56,14 +56,12 @@ print(missing_values_summary)
 ```
 
 ```{r}
-# Remove rows with missing notes
-data_clean <- data[!is.na(data$Notes), ]
-print(data_clean)
+# Print rows with notes
+print(data[!is.na(data$Notes), ])
 
 # Define keywords that suggest a mismatch between FPS-R score and observer score
-mismatch_keywords <- c("mischievous", "histrionic", "game", "no pain", "quietly and calmly", "did not withdraw",
-                       "really hurt", "did not feel", "said owee", "dramatic personality", "scored a 10 while smiling",
-                       "said owe but did not withdraw", "did not react in keeping with a score of 10")
+mismatch_keywords <- c("mischievous", "histrionic", "game", "understand scoring scale",
+                       "said ow", "did not feel", "dramatic")
 
 # Create a pattern string to search for any of the keywords
 pattern <- paste(mismatch_keywords, collapse = "|")
@@ -71,10 +69,7 @@ pattern <- paste(mismatch_keywords, collapse = "|")
 # Use grep to find rows that match the pattern
 rows_to_exclude <- grep(pattern, data$Notes, ignore.case = TRUE)
 print(data[rows_to_exclude,])
-
-# Exclude these rows
-data <- data[-rows_to_exclude, ]
-print(data)
+print(data[-rows_to_exclude,])
 ```
 
 ```{r}
