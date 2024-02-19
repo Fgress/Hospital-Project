@@ -197,7 +197,7 @@ labels <- paste(names(side_effects_observed_summary), " - ", percentages, "%", s
 # Pie Chart for "Any side effects observed?" with percentages
 pie(side_effects_observed_summary,
     main = "Proportion of Patients with Any Observed Side Effects",
-    col = rainbow(length(category_counts)),
+    col = rainbow(length(side_effects_observed_summary)),
     labels = labels,
     cex = 0.65)
 ```
@@ -264,9 +264,9 @@ combination_labels <- paste(names(combination_category_counts), " - ", combinati
 
 # Create a pie chart with percentages
 pie(combination_category_counts,
-    labels = combination_labels,
     main = "Combination Side Effects Distribution",
     col = rainbow(length(combination_category_counts)),
+    labels = combination_labels,
     cex = 0.8)
 
 # Pie Chart 2
@@ -280,12 +280,12 @@ category_counts <- table(all_categories)
 percentages <- round(category_counts / sum(category_counts) * 100, 1)
 
 # Create labels that include both the category name and the percentage
-labels <- paste(names(category_counts), " - ", percentages, "%", sep="")
+individual_labels <- paste(names(category_counts), " - ", percentages, "%", sep="")
 
 # Create a pie chart with percentages
 pie(category_counts,
-    labels = labels,
     main = "Individual Side Effects Distribution",
     col = rainbow(length(category_counts)),
+    labels = individual_labels,
     cex = 0.8)
 ```
