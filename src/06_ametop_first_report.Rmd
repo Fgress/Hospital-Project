@@ -169,7 +169,10 @@ data %>%
 data$Sex <- as.factor(data$Sex)
 data$Practitioner <- as.factor(data$Practitioner)
 data$`Needle gauge` <- as.factor(data$`Needle gauge`)
-linear_model <- lm(`FPS-R score` ~ Age + Sex + Practitioner + `Number of IV attempts` + `Needle gauge`, data = data)
+linear_model <- lm(`FPS-R score` ~ Age + Sex + Practitioner + `Number of IV attempts` + `Needle gauge`
+                   + Age * Sex + Age * `Number of IV attempts` + Age * Practitioner + Age * `Needle gauge`
+                   + Sex * Practitioner + Sex * `Needle gauge` + `Needle gauge` * Practitioner + `Number of IV attempts` * Practitioner
+                   , data = data)
 summary(linear_model)
 ```
 
