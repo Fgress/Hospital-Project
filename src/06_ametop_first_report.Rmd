@@ -4,7 +4,7 @@ output:
   html_document: default
 ---
 
-## Import libraries
+# Import libraries
 
 ```{r}
 library(readxl)
@@ -14,7 +14,7 @@ ggplot2::theme_set(theme_classic())
 options(repr.plot.width=15, repr.plot.height=7.5)
 ```
 
-## Data cleaning
+# Data cleaning
 
 ```{r}
 # Read data
@@ -67,7 +67,7 @@ data$`Reaction to skin puncture` <- gsub("^(Slight|Severe).*", "\\1 Pain",
 table(data$`Reaction to skin puncture`)
 ```
 
-## Data preprocessing
+# Data preprocessing
 
 ```{r}
 # Create new variables for the dataset
@@ -95,9 +95,9 @@ data$`Match Responses` <- ifelse(data$`Observer Number` == data$`FPS-R Number`, 
 head(data)
 ```
 
-## Objective 1
+# Objective 1
 
-# Histrograms and Boxplots
+## Histrograms and boxplots
 
 ```{r}
 # Histogram
@@ -143,7 +143,8 @@ combined_plot <- (plot1 | plot2) /
                  (plot5 | plot6)
 print(combined_plot)
 ```
-# Table
+
+## Table
 
 ```{r}
 # Create a table to count matches
@@ -160,7 +161,7 @@ cat("Columns: Observer Number\n\n")
 print(table)
 ```
 
-# T-tests
+## T-tests
 
 ```{r}
 # Perform t-test on full data
@@ -179,9 +180,9 @@ print(t_test_subset)
 # from the original 223), we do not reject the null hypothesis.
 ```
 
-## Objective 2
+# Objective 2
 
-# Interaction plots
+## Interaction plots
 
 ```{r}
 # Only use match subset data
@@ -223,7 +224,7 @@ for (x_var in categorical_vars) {
 # + Age * `Needle gauge` + Age * Practitioner + `Number of IV attempts` * Practitioner
 ```
 
-# Histograms for FPS-R score
+## Histograms for FPS-R score
 
 ```{r}
 data %>% 
@@ -278,7 +279,7 @@ data %>%
          y = "FPS-R score")
 ```
 
-# Linear models for FPS-R score
+## Linear models for FPS-R score
 
 ```{r}
 data_subset <- data[data$`Match Responses` == 'Yes',]
@@ -294,21 +295,21 @@ lm_model_with_interactions <- lm(`FPS-R score` ~ Age + Sex + Practitioner + `Num
 summary(lm_model_with_interactions)
 ```
 
-# Print linear model without interactions
+## Print linear model without interactions
 
 ```{r}
 plot(lm_model_without_interactions)
 ```
 
-# Print linear model with interactions
+## Print linear model with interactions
 
 ```{r}
 plot(lm_model_with_interactions)
 ```
 
-## Objective 3
+# Objective 3
 
-# Pie chart draw function with percentages
+## Pie chart draw function with percentages
 
 ```{r}
 draw_pie_chart <- function(all_categories, title) {
@@ -330,7 +331,7 @@ draw_pie_chart <- function(all_categories, title) {
 }
 ```
 
-# Pie chart for Observed side effects (No / Yes - Ametop alone / Yes - Ametop + vapocoolant spray)
+## Pie chart for Observed side effects (No / Yes - Ametop alone / Yes - Ametop + vapocoolant spray)
 
 ```{r}
 # Summarize "Any side effects observed?" column
@@ -344,7 +345,7 @@ side_effects_observed_summary <- data.frame(
 draw_pie_chart(side_effects_observed_summary, "Observed Side Effects")
 ```
 
-# Define the categorization function
+## Define the categorization function
 
 ```{r}
 categorize_effects <- function(effect) {
@@ -385,7 +386,7 @@ categorize_effects <- function(effect) {
 }
 ```
 
-# Categorization function caller
+## Categorization function caller
 
 ```{r}
 # Apply the categorization function and create a list of categories for each side effect
@@ -400,7 +401,7 @@ categorize_and_print <- function(group_number) {
 }
 ```
 
-# Pie chart draw function for combined categories
+## Pie chart draw function for combined categories
 
 ```{r}
 draw_pie_chart_combined <- function(side_effects_data, title) {
@@ -412,7 +413,7 @@ draw_pie_chart_combined <- function(side_effects_data, title) {
 }
 ```
 
-# Pie chart draw function for individual categories
+## Pie chart draw function for individual categories
 
 ```{r}
 draw_pie_chart_individual <- function(side_effects_data, title) {
@@ -424,7 +425,7 @@ draw_pie_chart_individual <- function(side_effects_data, title) {
 }
 ```
 
-# Pie chart for observed side effects of Ametop alone (Redness, Itching, Pain, Puffiness)
+## Pie chart for observed side effects of Ametop alone (Redness, Itching, Pain, Puffiness)
 
 ```{r}
 # Get the side effects data for the control group
@@ -439,7 +440,7 @@ draw_pie_chart_individual(side_effects_data_control_group,
                           "Individual Side Effects Distribution - Ametop alone")
 ```
 
-# Pie chart for observed side effects of Ametop + Spray (Redness, Itching, Pain, Puffiness)
+## Pie chart for observed side effects of Ametop + Spray (Redness, Itching, Pain, Puffiness)
 
 ```{r}
 # Get the side effects data for the study group
