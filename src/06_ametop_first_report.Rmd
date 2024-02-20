@@ -227,56 +227,37 @@ for (x_var in categorical_vars) {
 ## Histograms for FPS-R score
 
 ```{r}
-data %>% 
-    ggplot(aes(x = Age, y = `FPS-R score`)) +
-    geom_point(size=4) +
-    theme(text = element_text(size=25)) +
-    scale_y_continuous(breaks=0:10) +
-    labs(x = "Age",
-         y = "FPS-R score")
+# General function to create plots
+plot_data <- function(data, x_var, y_var = "FPS-R score", x_label = "", y_label = "FPS-R score") {
+  p <- data %>%
+    ggplot(aes(x = !!sym(x_var), y = !!sym(y_var))) +
+    geom_point(size = 2) +
+    scale_y_continuous(breaks = seq(0, 10, by = 1)) +
+    labs(x = x_label, y = y_label) +
+    ggtitle(paste("Distribution of", y_label, "by", x_label))
+
+  print(p)
+}
+```
+
+```{r}
+# Plot for Age
+plot_data(data, "Age", x_label = "Age")
+
+# Plot for Sex
+plot_data(data, "Sex", x_label = "Sex")
+
+# Plot for Practitioner
+plot_data(data, "Practitioner", x_label = "Practitioner")
+
+# Plot for Number of IV attempts
+plot_data(data, "Number of IV attempts", x_label = "Number of IV attempts")
+
+# Plot for Needle gauge
+plot_data(data, "Needle gauge", x_label = "Needle gauge")
 
 # The younger the age, the more concentrated the distribution of pain scores.
-```
-
-```{r}
-data %>% 
-    ggplot(aes(x = Sex, y = `FPS-R score`)) +
-    geom_point(size=4) +
-    theme(text = element_text(size=25)) +
-    scale_y_continuous(breaks=0:10) +
-    labs(x = "Sex",
-         y = "FPS-R score")
-```
-
-```{r}
-data %>% 
-    ggplot(aes(x = `Practitioner`, y = `FPS-R score`)) +
-    geom_point(size=4) +
-    theme(text = element_text(size=25)) +
-    scale_y_continuous(breaks=0:10) +
-    labs(x = "Practitioner",
-         y = "FPS-R score")
-```
-
-```{r}
-data %>% 
-    ggplot(aes(x = `Number of IV attempts`, y = `FPS-R score`)) +
-    geom_point(size=4) +
-    theme(text = element_text(size=25)) +
-    scale_y_continuous(breaks=0:10) +
-    labs(x = "Number of IV attempts",
-         y = "FPS-R score")
 # The fewer the number of IV injections, the more concentrated the high pain scores are.
-```
-
-```{r}
-data %>% 
-    ggplot(aes(x = `Needle gauge`, y = `FPS-R score`)) +
-    geom_point(size=4) +
-    theme(text = element_text(size=25)) +
-    scale_y_continuous(breaks=0:10) +
-    labs(x = "Needle gauge",
-         y = "FPS-R score")
 ```
 
 ## Linear models for FPS-R score
