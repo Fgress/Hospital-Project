@@ -85,6 +85,9 @@ data$`FPS-R Number` <- case_when(
   data$`FPS-R score` %in% c(4, 6) ~ 2,
   data$`FPS-R score` %in% c(8, 10) ~ 3
 )
+
+# Create 'Match Responses'
+data$`Match Responses` <- ifelse(data$`Observer Number` == data$`FPS-R Number`, "Yes", "No")
 ```
 
 ```{r}
@@ -92,14 +95,129 @@ data$`FPS-R Number` <- case_when(
 head(data)
 ```
 
-## Data analysis
+## Objective 1
+
+# Histrograms and Boxplots
 
 ```{r}
-# Compare the sample sizes between the control group and the study group
-table(data$Randomization)
+# Histogram
+plot1 <- data %>% filter(Randomization == 1) %>%
+  ggplot(aes(`FPS-R score`)) +
+  geom_histogram() +
+  labs(title = "Group 1 Histogram")
+
+plot2 <- data %>% filter(Randomization == 2) %>%
+  ggplot(aes(`FPS-R score`)) +
+  geom_histogram() +
+  labs(title = "Group 2 Histogram")
+
+# Boxplot
+plot3 <- data %>% filter(Randomization == 1) %>%
+  ggplot(aes(`FPS-R score`)) +
+  geom_boxplot() +
+  labs(title = "Full Data Group 1 Boxplot")
+
+plot4 <- data %>% filter(Randomization == 2) %>%
+  ggplot(aes(`FPS-R score`)) +
+  geom_boxplot() +
+  labs(title = "Full Data Group 2 Boxplot")
+
+# Boxplot
+plot5 <- data %>% filter(Randomization == 1, `Match Responses` == "Yes") %>%
+  ggplot(aes(`FPS-R score`)) +
+  geom_boxplot() +
+  labs(title = "Match Subset Data Group 1 Boxplot")
+
+plot6 <- data %>% filter(Randomization == 2, `Match Responses` == "Yes") %>%
+  ggplot(aes(`FPS-R score`)) +
+  geom_boxplot() +
+  labs(title = "Match Subset Data Group 2 Boxplot")
+
+# Load the patchwork library
+library(patchwork)
+
+# Combine the plots
+cat("Group 1 = Control group\nGroup 2 = Study group")
+combined_plot <- (plot1 | plot2) / 
+                 (plot3 | plot4) / 
+                 (plot5 | plot6)
+print(combined_plot)
+```
+# Table
+
+```{r}
+# Create a table to count matches
+table <- table(data$`Observer Number`, data$`FPS-R Number`)
+
+# Name the rows and columns to reflect the desired format
+rownames(table) <- c("1", "2", "3")
+colnames(table) <- c("1", "2", "3")
+
+# Output the 3x3 table
+cat("Contingency Table of FPS-R Number vs. Observer Number\n")
+cat("Rows: FPS-R Number\n")
+cat("Columns: Observer Number\n\n")
+print(table)
+```
+
+# T-tests
+
+```{r}
+# Perform t-test on full data
+t_test_full <- t.test(data[data$Randomization == 1, ]$`FPS-R score`, 
+                      data[data$Randomization == 2, ]$`FPS-R score`)
+print(t_test_full)
+
+# Perform t-test on subset of data
+data_subset <- data[data$`Match Responses` == 'Yes',]
+t_test_subset <- t.test(data_subset[data_subset$Randomization == 1, ]$`FPS-R score`, 
+                        data_subset[data_subset$Randomization == 2, ]$`FPS-R score`)
+print(t_test_subset)
+
+# Conclusion: reject null on full data only, if match subset data (with 223-59=164 observations) we do not reject
+```
+
+## Objective 2
+
+# Interaction plots
+
+```{r}
+#Only use match subset data
+data = data[data$`Match Responses` == "Yes",]
+
+# Convert continuous variables to categorical factors
+data$Age_Group <- cut(data$Age, breaks = 2, labels = c("5-10", "11-16")) 
+data$IV_Attempts_Group <- cut(data$`Number of IV attempts`, breaks = 2, labels = c("Low", "High"))
+
+# Make sure all categorical variables are treated as factors
+data$`Needle gauge` <- as.factor(data$`Needle gauge`)
+data$Sex <- as.factor(data$Sex)
+data$Practitioner <- as.factor(data$Practitioner)
+
+# List of categorical variables
+categorical_vars <- c("Sex", "Age_Group", "IV_Attempts_Group", "Needle gauge", "Practitioner")
+
+# Create interaction plots for all pairs of categorical variables
+for (x_var in categorical_vars) {
+  for (trace_var in categorical_vars) {
+    if (x_var != trace_var) {  # Avoid plotting a variable against itself
+      interaction.plot(x.factor = data[[x_var]], trace.factor = data[[trace_var]], response = data$`FPS-R score`,
+                       type = "b",
+                       pch = 19,
+                       xlab = x_var, ylab = "FPS-R Score", trace.label = trace_var,
+                       col = c("red", "blue"),
+                       lty = 1,
+                       legend = TRUE,
+                       main = paste("Interaction Plot:", x_var, "vs", trace_var))
+    }
+  }
+}
+
+# Significant Interaction : Sex*Age + Sex*`Needle gauge` + Sex*Practitioner + Age*`Needle gauge` + Age*Practitioner + `Number of IV attempts`*Practitioner
 ```
 
 # Histograms for FPS-R score
+
 ```{r}
 data %>% 
     ggplot(aes(x = Age, y = `FPS-R score`)) +
@@ -153,25 +271,38 @@ data %>%
          y = "FPS-R score")
 ```
 
-# Linear model for FPS-R score
-```{r}
-# Linear model for FPS-R score
-data$Sex <- as.factor(data$Sex)
-data$Practitioner <- as.factor(data$Practitioner)
-data$`Needle gauge` <- as.factor(data$`Needle gauge`)
-linear_model <- lm(`FPS-R score` ~ Age + Sex + Practitioner + `Number of IV attempts` + `Needle gauge`
-                   + Age * Sex + Age * `Number of IV attempts` + Age * Practitioner + Age * `Needle gauge`
-                   + Sex * Practitioner + Sex * `Needle gauge` + `Needle gauge` * Practitioner + `Number of IV attempts` * Practitioner
-                   , data = data)
-summary(linear_model)
-```
+# Linear models for FPS-R score
 
 ```{r}
-# Plot linear model for FPS-R score
-plot(linear_model)
+data_subset <- data[data$`Match Responses` == 'Yes',]
+
+lm_model_without_interactions <- lm(`FPS-R score` ~ Age + Sex + Practitioner +
+                 `Number of IV attempts` + `Needle gauge`, data = data_subset)
+summary(lm_model_without_interactions)
+
+lm_model_with_interactions <- lm(`FPS-R score` ~ Age + Sex + Practitioner + `Number of IV attempts` + `Needle gauge` 
+                + Sex*Age + Sex*`Needle gauge` + Sex*Practitioner
+                + Age*`Needle gauge` + Age*Practitioner + `Number of IV attempts`*Practitioner, 
+                data = data_subset)
+summary(lm_model_with_interactions)
 ```
+
+# Print linear model without interactions
+
+```{r}
+plot(lm_model_without_interactions)
+```
+
+# Print linear model with interactions
+
+```{r}
+plot(lm_model_with_interactions)
+```
+
+## Objective 3
 
 # Pie chart for Observed side effects (No / Yes - Ametop alone / Yes - Ametop + vapocoolant spray)
+
 ```{r}
 # Summarize "Any side effects observed?" column
 side_effects_observed_summary <- table(
@@ -194,13 +325,9 @@ pie(side_effects_observed_summary,
     cex = 0.65)
 ```
 
-# Pie chart for Observed side effects (Redness, Itching, Pain, Puffiness)
-```{r}
-# Filter out missing values and create a data frame with only the side effects
-side_effects_data_control_group <- data.frame(SideEffects = na.omit(original_data[original_data$Randomization == 1,]$`Observed side effects`))
-side_effects_data_study_group <- data.frame(SideEffects = na.omit(original_data[original_data$Randomization == 2,]$`Observed side effects`))
-
 # Define the categorization function
+
+```{r}
 categorize_effects <- function(effect) {
   effect_lower <- tolower(effect)
   categories <- list(
@@ -236,37 +363,108 @@ categorize_effects <- function(effect) {
 
   return(identified_categories)
 }
+```
 
-# create pie charts for the control group and the study group
-groups <- list(side_effects_data_control_group, side_effects_data_study_group)
-for (side_effects_data in groups) {
-  group_name <- ifelse(identical(side_effects_data, side_effects_data_control_group), "Control Group", "Study Group")
+# Pie chart for observed side effects of Ametop alone (Redness, Itching, Pain, Puffiness)
 
-  # Apply the categorization function and create a list of categories for each side effect
-  side_effects_data$Categories <- sapply(side_effects_data$SideEffects, categorize_effects, USE.NAMES=FALSE)
-  side_effects_data$Categories <- lapply(side_effects_data$Categories, paste, collapse = ", ")
-  print(data.frame(side_effects_data$SideEffects, side_effects_data$Categories))
+```{r}
+# Filter out missing values and create a data frame with only the side effects
+side_effects_data_control <- data.frame(SideEffects = na.omit(original_data[original_data$Randomization == 1,]$`Observed side effects`))
 
-  # Pie chart for individual categories
-  all_categories <- unlist(side_effects_data$Categories)
-  category_counts <- table(all_categories)
-  percentages <- round(category_counts / sum(category_counts) * 100, 1)
-  labels <- paste(names(category_counts), " - ", percentages, "%", sep="")
-  pie(category_counts,
-      main = paste("Individual Side Effects Distribution -", group_name),
-      col = rainbow(length(category_counts)),
-      labels = labels,
-      cex = 0.8)
+# Apply the categorization function and create a list of categories for each side effect
+side_effects_data_control$Categories <- sapply(side_effects_data_control$SideEffects, categorize_effects, USE.NAMES=FALSE)
+print(data.frame(side_effects_data_control$SideEffects,
+                 sapply(side_effects_data_control$Categories, paste, collapse = ", ")))
 
-  # Pie chart for combination categories
-  all_combination_categories <- sapply(side_effects_data$Categories, paste, collapse = " + ")
-  combination_category_counts <- table(all_combination_categories)
-  combination_category_percentages <- round(combination_category_counts / sum(combination_category_counts) * 100, 1)
-  combination_labels <- paste(names(combination_category_counts), " - ", combination_category_percentages, "%", sep="")
-  pie(combination_category_counts,
-      main = paste("Combined Side Effects Distribution -", group_name),
-      col = rainbow(length(combination_category_counts)),
-      labels = combination_labels,
-      cex = 0.8)
-}
+# Pie Chart 1
+# Combination Categories
+all_combination_categories_ametop_alone <- sapply(side_effects_data_control$Categories, paste, collapse = " + ")
+
+# Count the occurrences of each category
+combination_category_counts_ametop_alone <- table(all_combination_categories_ametop_alone)
+
+# Calculate the percentage for each category
+combination_category_percentages <- round(combination_category_counts_ametop_alone / sum(combination_category_counts_ametop_alone) * 100, 1)
+
+# Create labels that include both the category name and the percentage
+combination_labels <- paste(names(combination_category_counts_ametop_alone), " - ", combination_category_percentages, "%", sep="")
+
+# Create a pie chart with percentages
+pie(combination_category_counts_ametop_alone,
+    main = "Combination Side Effects Distribution - Ametop alone",
+    col = rainbow(length(combination_category_counts_ametop_alone)),
+    labels = combination_labels,
+    cex = 0.8)
+
+# Pie Chart 2
+# Flatten the list into a vector
+all_categories_ametop_alone <- unlist(side_effects_data_control$Categories)
+
+# Count the occurrences of each category
+category_counts_ametop_alone <- table(all_categories_ametop_alone)
+
+# Calculate the percentage for each category
+percentages <- round(category_counts_ametop_alone / sum(category_counts_ametop_alone) * 100, 1)
+
+# Create labels that include both the category name and the percentage
+individual_labels <- paste(names(category_counts_ametop_alone), " - ", percentages, "%", sep="")
+
+# Create a pie chart with percentages
+pie(category_counts_ametop_alone,
+    main = "Individual Side Effects Distribution - Ametop alone",
+    col = rainbow(length(category_counts_ametop_alone)),
+    labels = individual_labels,
+    cex = 0.8)
+```
+
+# Pie chart for observed side effects of Ametop + Spray (Redness, Itching, Pain, Puffiness)
+
+```{r}
+# Filter out missing values and create a data frame with only the side effects
+side_effects_data_study_group <- data.frame(SideEffects = na.omit(original_data[original_data$Randomization == 2,]$`Observed side effects`))
+
+# Apply the categorization function and create a list of categories for each side effect
+side_effects_data_study_group$Categories <- sapply(side_effects_data_study_group$SideEffects, categorize_effects, USE.NAMES=FALSE)
+print(data.frame(side_effects_data_study_group$SideEffects,
+                 sapply(side_effects_data_study_group$Categories, paste, collapse = ", ")))
+
+# Pie Chart 1
+# Combination Categories
+all_combination_categories_ametop_spray <- sapply(side_effects_data_study_group$Categories, paste, collapse = " + ")
+
+# Count the occurrences of each category
+combination_category_counts_ametop_spray <- table(all_combination_categories_ametop_spray)
+
+# Calculate the percentage for each category
+combination_category_percentages <- round(combination_category_counts_ametop_spray / sum(combination_category_counts_ametop_spray) * 100, 1)
+
+# Create labels that include both the category name and the percentage
+combination_labels <- paste(names(combination_category_counts_ametop_spray), " - ", combination_category_percentages, "%", sep="")
+
+# Create a pie chart with percentages
+pie(combination_category_counts_ametop_spray,
+    main = "Combination Side Effects Distribution - Ametop + Spray",
+    col = rainbow(length(combination_category_counts_ametop_spray)),
+    labels = combination_labels,
+    cex = 0.8)
+
+# Pie Chart 2
+# Flatten the list into a vector
+all_categories_ametop_spray <- unlist(side_effects_data_study_group$Categories)
+
+# Count the occurrences of each category
+category_counts_ametop_spray <- table(all_categories_ametop_spray)
+
+# Calculate the percentage for each category
+percentages <- round(category_counts_ametop_spray / sum(category_counts_ametop_spray) * 100, 1)
+
+# Create labels that include both the category name and the percentage
+individual_labels <- paste(names(category_counts_ametop_spray), " - ", percentages, "%", sep="")
+
+# Create a pie chart with percentages
+pie(category_counts_ametop_spray,
+    main = "Individual Side Effects Distribution - Ametop + Spray",
+    col = rainbow(length(category_counts_ametop_spray)),
+    labels = individual_labels,
+    cex = 0.8)
 ```
