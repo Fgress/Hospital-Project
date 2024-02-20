@@ -87,6 +87,9 @@ data$`Match Responses` <- ifelse(data$`Observer Number` == data$`FPS-R Number`, 
 
 ## Interaction plot
 ```{r}
+#Only use match subset data
+data = data[data$`Match Responses` == "Yes",]
+
 # Convert continuous variables to categorical factors
 data$Age_Group <- cut(data$Age, breaks = 2, labels = c("5-10", "11-16")) 
 data$IV_Attempts_Group <- cut(data$`Number of IV attempts`, breaks = 2, labels = c("Low", "High"))
@@ -115,5 +118,7 @@ for (x_var in categorical_vars) {
     }
   }
 }
+
+# Significant Interaction : Sex*Age + Sex*`Needle gauge` + Sex*Practitioner + Age*`Needle gauge` + Age*Practitioner + `Number of IV attempts`*Practitioner
 ```
 

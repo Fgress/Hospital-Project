@@ -91,8 +91,8 @@ lm_model <- lm(`FPS-R score` ~ Age + Sex + Practitioner +
 summary(lm_model)
 
 lm_model2 <- lm(`FPS-R score` ~ Age + Sex + Practitioner + `Number of IV attempts` + `Needle gauge` 
-                + Sex*Age + Sex*`Needle gauge` + Sex*Practitioner + Age + `Number of IV attempts`
-                + Age*`Needle gauge` + Age*Practitioner + `Number of IV attempts`*Practitioner + `Needle gauge`*Practitioner, 
+                + Sex*Age + Sex*`Needle gauge` + Sex*Practitioner
+                + Age*`Needle gauge` + Age*Practitioner + `Number of IV attempts`*Practitioner, 
                 data = data_subset)
 summary(lm_model2)
 ```
