@@ -1,0 +1,119 @@
+---
+title: "Interaction plot"
+output: pdf_document
+date: "2024-02-20"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Data cleaning
+
+
+```{r warning=FALSE}
+library("readxl")
+library(tidyverse)
+
+#Upload data
+data = read_excel("data/Ametop-PE data(new-Alex)(1control 2study).xlsx")
+
+#Remove withdrawn patients
+data <- data[data$`Withdrawn after consent?` != "Yes", ]
+
+#Remove unnecessary variables
+data <- select(data, 
+               -`Elective surgery requiring IV?`,
+               -`ASA I or II?`,
+               -`Aged 5-16?`,
+               -`Any allergies to Ametop, Pain Ease, or Tagederm adhesive?`,
+               -`Ametop placed at least 30min before estimated IV start time?`,
+               -`Receiving sedative pre-medication / anxiolytics?`,
+               -`Needle phobia?`,
+               -`Planned inhalation induction?`,
+               -`Developmental delay or unable to interpret FPS-R?`,
+               -`Time Ametop applied`,
+               -`Time Ametop removed`,
+               -`Time of skin puncture`,
+               -`Record ID`,
+               -`Complete?`,
+               -`Reason for withdrawal`,
+               -`Other reason for withdrawal`)
+
+
+```
+
+```{r}
+# Check for missing values in all columns except 'Notes' and 'Observed side effects'
+missing_values_summary <- data %>%
+  select(-Notes, -`Observed side effects`) %>%
+  summarise_all(~sum(is.na(.)))
+
+#No missing values found
+print(missing_values_summary)
+
+```
+```{r}
+#Shorten the data
+data$`Reaction to skin puncture` <- gsub("^Slight.*", "Slight Pain", data$`Reaction to skin puncture`)
+
+data$`Reaction to skin puncture` <- gsub("^Severe.*", "Severe Pain", data$`Reaction to skin puncture`)
+
+# Verify the changes
+table(data$`Reaction to skin puncture`)
+```
+
+
+```{r}
+# Creating new variables for the dataset
+
+# Create 'Observer Number'
+data$`Observer Number` <- case_when(
+  data$`Reaction to skin puncture` == "None" ~ 1,
+  data$`Reaction to skin puncture` == "Slight Pain" ~ 2,
+  data$`Reaction to skin puncture` == "Severe Pain" ~ 3
+)
+
+# Create 'FPS-R Number'
+data$`FPS-R Number` <- case_when(
+  data$`FPS-R score` %in% c(0, 2) ~ 1,
+  data$`FPS-R score` %in% c(4, 6) ~ 2,
+  data$`FPS-R score` %in% c(8, 10) ~ 3
+)
+
+# 3. Create 'Match Responses'
+data$`Match Responses` <- ifelse(data$`Observer Number` == data$`FPS-R Number`, "Yes", "No")
+```
+
+## Interaction plot
+```{r}
+# Convert continuous variables to categorical factors
+data$Age_Group <- cut(data$Age, breaks = 2, labels = c("5-10", "11-16")) 
+data$IV_Attempts_Group <- cut(data$`Number of IV attempts`, breaks = 2, labels = c("Low", "High"))
+
+# Make sure all categorical variables are treated as factors
+data$`Needle gauge` <- as.factor(data$`Needle gauge`)
+data$Sex <- as.factor(data$Sex)
+data$Practitioner <- as.factor(data$Practitioner)
+
+# List of categorical variables
+categorical_vars <- c("Sex", "Age_Group", "IV_Attempts_Group", "Needle gauge", "Practitioner")
+
+# Create interaction plots for all pairs of categorical variables
+for (x_var in categorical_vars) {
+  for (trace_var in categorical_vars) {
+    if (x_var != trace_var) {  # Avoid plotting a variable against itself
+      interaction.plot(x.factor = data[[x_var]], trace.factor = data[[trace_var]], response = data$`FPS-R score`,
+                       type = "b",  
+                       pch = 19,    
+                       xlab = x_var, ylab = "FPS-R Score", trace.label = trace_var,
+                       col = c("red", "blue"),  
+                       lty = 1,     
+                       legend = TRUE,
+                       main = paste("Interaction Plot:", x_var, "vs", trace_var))  # Add a title to each plot
+    
+    }
+  }
+}
+```
+
