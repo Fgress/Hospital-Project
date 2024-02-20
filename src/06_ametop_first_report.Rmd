@@ -309,9 +309,8 @@ plot(lm_model_with_interactions)
 
 # Objective 3
 
-## Pie chart draw function with percentages
-
 ```{r}
+# Pie chart draw function with percentages
 draw_pie_chart <- function(all_categories, title) {
   # Count the occurrences of each category
   category_counts <- table(all_categories)
@@ -345,9 +344,8 @@ side_effects_observed_summary <- data.frame(
 draw_pie_chart(side_effects_observed_summary, "Observed Side Effects")
 ```
 
-## Define the categorization function
-
 ```{r}
+# Define the categorization function
 categorize_effects <- function(effect) {
   effect_lower <- tolower(effect)
   categories <- list(
@@ -386,10 +384,8 @@ categorize_effects <- function(effect) {
 }
 ```
 
-## Categorization function caller
-
 ```{r}
-# Apply the categorization function and create a list of categories for each side effect
+# Create and print a list of categories for each side effect
 categorize_and_print <- function(group_number) {
   side_effects_data <- data.frame(SideEffects = na.omit(original_data[
     original_data$Randomization == group_number,]$`Observed side effects`))
@@ -401,9 +397,8 @@ categorize_and_print <- function(group_number) {
 }
 ```
 
-## Pie chart draw function for combined categories
-
 ```{r}
+# Pie chart draw function for combined categories
 draw_pie_chart_combined <- function(side_effects_data, title) {
   # Combination Categories
   all_categories <- sapply(side_effects_data$Categories, paste, collapse = " + ")
@@ -413,9 +408,8 @@ draw_pie_chart_combined <- function(side_effects_data, title) {
 }
 ```
 
-## Pie chart draw function for individual categories
-
 ```{r}
+# Pie chart draw function for individual categories
 draw_pie_chart_individual <- function(side_effects_data, title) {
   # Flatten the list into a vector
   all_categories <- unlist(side_effects_data$Categories)
