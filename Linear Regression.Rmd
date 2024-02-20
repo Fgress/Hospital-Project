@@ -1,0 +1,98 @@
+---
+title: "Linear regression analysis"
+output: pdf_document
+date: "2024-02-20"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Data cleaning
+
+```{r warning=FALSE}
+library("readxl")
+library(tidyverse)
+
+#Upload data
+data = read_excel("data/Ametop-PE data(new-Alex)(1control 2study).xlsx")
+
+#Remove withdrawn patients
+data <- data[data$`Withdrawn after consent?` != "Yes", ]
+
+#Remove unnecessary variables
+data <- select(data, 
+               -`Elective surgery requiring IV?`,
+               -`ASA I or II?`,
+               -`Aged 5-16?`,
+               -`Any allergies to Ametop, Pain Ease, or Tagederm adhesive?`,
+               -`Ametop placed at least 30min before estimated IV start time?`,
+               -`Receiving sedative pre-medication / anxiolytics?`,
+               -`Needle phobia?`,
+               -`Planned inhalation induction?`,
+               -`Developmental delay or unable to interpret FPS-R?`,
+               -`Time Ametop applied`,
+               -`Time Ametop removed`,
+               -`Time of skin puncture`,
+               -`Record ID`,
+               -`Complete?`,
+               -`Reason for withdrawal`,
+               -`Other reason for withdrawal`)
+
+
+```
+
+```{r}
+# Check for missing values in all columns except 'Notes' and 'Observed side effects'
+missing_values_summary <- data %>%
+  select(-Notes, -`Observed side effects`) %>%
+  summarise_all(~sum(is.na(.)))
+
+#No missing values found
+print(missing_values_summary)
+
+```
+```{r}
+#Shorten the data
+data$`Reaction to skin puncture` <- gsub("^Slight.*", "Slight Pain", data$`Reaction to skin puncture`)
+
+data$`Reaction to skin puncture` <- gsub("^Severe.*", "Severe Pain", data$`Reaction to skin puncture`)
+
+# Verify the changes
+table(data$`Reaction to skin puncture`)
+```
+
+
+```{r}
+# Creating new variables for the dataset
+
+# Create 'Observer Number'
+data$`Observer Number` <- case_when(
+  data$`Reaction to skin puncture` == "None" ~ 1,
+  data$`Reaction to skin puncture` == "Slight Pain" ~ 2,
+  data$`Reaction to skin puncture` == "Severe Pain" ~ 3
+)
+
+# Create 'FPS-R Number'
+data$`FPS-R Number` <- case_when(
+  data$`FPS-R score` %in% c(0, 2) ~ 1,
+  data$`FPS-R score` %in% c(4, 6) ~ 2,
+  data$`FPS-R score` %in% c(8, 10) ~ 3
+)
+
+# 3. Create 'Match Responses'
+data$`Match Responses` <- ifelse(data$`Observer Number` == data$`FPS-R Number`, "Yes", "No")
+```
+
+```{r}
+data_subset <- data[data$`Match Responses` == 'Yes',]
+lm_model <- lm(`FPS-R score` ~ Age + Sex + Practitioner +
+                 `Number of IV attempts` + `Needle gauge`, data = data_subset)
+summary(lm_model)
+
+lm_model2 <- lm(`FPS-R score` ~ Age + Sex + Practitioner + `Number of IV attempts` + `Needle gauge` 
+                + Sex*Age + Sex*`Needle gauge` + Sex*Practitioner + Age + `Number of IV attempts`
+                + Age*`Needle gauge` + Age*Practitioner + `Number of IV attempts`*Practitioner + `Needle gauge`*Practitioner, 
+                data = data_subset)
+summary(lm_model2)
+```
