@@ -1,0 +1,26 @@
+---
+title: "First Draft Report: Group 6 Ametop Study with Dr. Louis Scheepers"
+output: pdf_document
+date: "21 February 2024"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+#Set up echo as false to not print the R code in the report
+```
+
+
+\begin{center}
+- Fabiola Grace
+
+- Maggie Ruan
+
+- Runhe Gao
+
+- Yimin You
+
+\end{center}
+
+\newpage
+
+# Summary
