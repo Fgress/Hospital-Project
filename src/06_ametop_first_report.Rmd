@@ -89,7 +89,7 @@ data$`FPS-R Number` <- case_when(
 # Create 'Match Responses'
 data$`Match Responses` <- ifelse(data$`Observer Number` == data$`FPS-R Number`, "Yes", "No")
 
-#Create data subset for match data
+# Create data subset for match data
 data_subset <- data[data$`Match Responses` == 'Yes',]
 ```
 
@@ -378,7 +378,7 @@ categorize_and_print <- function(group_number) {
   side_effects_data$Categories <- sapply(side_effects_data$SideEffects,
                                           categorize_effects, USE.NAMES=FALSE)
   print(data.frame(side_effects_data$SideEffects,
-                   sapply(side_effects_data$Categories, paste, collapse = ", ")))
+                   Categories = sapply(side_effects_data$Categories, paste, collapse = ", ")))
   return(side_effects_data)
 }
 ```
