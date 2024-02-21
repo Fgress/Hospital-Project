@@ -13,7 +13,7 @@ library(ggplot2)
 library(tidyverse)
 library(gridExtra)
 ggplot2::theme_set(theme_classic())
-options(repr.plot.width=15, repr.plot.height=7.5)
+options(repr.plot.width=20, repr.plot.height=20)
 ```
 
 
@@ -331,7 +331,7 @@ head(data)
 
 #### Histrograms and boxplots
 
-```{r, echo=TRUE}
+```{r, echo=TRUE, fig.align='center'}
 # Histogram
 plot1 <- data %>% filter(Randomization == 1) %>%
   ggplot(aes(`FPS-R score`)) +
@@ -409,7 +409,7 @@ print(t_test_subset)
 
 #### Interaction plots
 
-```{r, echo=TRUE, out.width="40%"}
+```{r, echo=TRUE, out.width="20%"}
 # Only use match subset data
 
 # Convert continuous variables to categorical factors
@@ -466,7 +466,7 @@ plot_data <- function(data, x_var, y_var = "FPS-R score", x_label = "", y_label 
 }
 ```
 
-```{r, echo=TRUE, out.width="75%"}
+```{r, echo=TRUE, out.width="75%", fig.align='center'}
 # Plot for Age
 plot_data(data, "Age", x_label = "Age")
 
@@ -504,13 +504,13 @@ summary(lm_model_with_interactions)
 
 #### Print linear model without interactions
 
-```{r, echo=TRUE}
+```{r, echo=TRUE, fig.align='center'}
 plot(lm_model_without_interactions)
 ```
 
 #### Print linear model with interactions
 
-```{r, echo=TRUE}
+```{r, echo=TRUE, fig.align='center'}
 plot(lm_model_with_interactions)
 ```
 
@@ -539,7 +539,7 @@ draw_pie_chart <- function(all_categories, title) {
 
 #### Pie chart for Observed side effects (No / Yes - Ametop alone / Yes - Ametop + vapocoolant spray)
 
-```{r, echo=TRUE}
+```{r, echo=TRUE, fig.align='center'}
 # Summarize "Any side effects observed?" column
 side_effects_observed_summary <- data.frame(
   ifelse(original_data$`Any side effects observed?` == "No", "No Side Effect",
@@ -628,7 +628,7 @@ draw_pie_chart_individual <- function(side_effects_data, title) {
 
 #### Pie chart for observed side effects of Ametop alone (Redness, Itching, Pain, Puffiness)
 
-```{r, echo=TRUE}
+```{r, echo=TRUE, fig.align='center'}
 # Get the side effects data for the control group
 side_effects_data_control_group <- categorize_and_print(1)
 
@@ -643,7 +643,7 @@ draw_pie_chart_individual(side_effects_data_control_group,
 
 #### Pie chart for observed side effects of Ametop + Spray (Redness, Itching, Pain, Puffiness)
 
-```{r, echo=TRUE}
+```{r, echo=TRUE, fig.align='center'}
 # Get the side effects data for the study group
 side_effects_data_study_group <- categorize_and_print(2)
 
