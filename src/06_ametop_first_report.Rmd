@@ -377,7 +377,7 @@ categorize_and_print <- function(group_number) {
     original_data$Randomization == group_number,]$`Observed side effects`))
   side_effects_data$Categories <- sapply(side_effects_data$SideEffects,
                                           categorize_effects, USE.NAMES=FALSE)
-  print(data.frame(side_effects_data$SideEffects,
+  print(data.frame(Description = side_effects_data$SideEffects,
                    Categories = sapply(side_effects_data$Categories, paste, collapse = ", ")))
   return(side_effects_data)
 }
