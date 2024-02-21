@@ -58,7 +58,7 @@ The dataset has several key variables, categorized as follows:
 
 The main challenge in assessing our primary objective lies in the presence of two target responses: the FPS-R scores selected by the patients and the observer's scores. Accurately measuring pain in children using FPS-R scores alone can be difficult, as some children may be playful or might not fully comprehend the pictograms provided. Thus, the observer’s scores serve as an additional target response, intended to confirm the reliability of the FPS-R scores. While the patient’s FPS-R score remains the focal point, its alignment with the observer’s scores is necessary. Consequently, we will conduct the statistical analysis and testing in two ways: a test covering the entire dataset, and a second test limited to a subset of data where the observer's scores and the patient's FPS-R score align.
 
-(table)
+![Count](misc/Table.png){width=75%}
 
 The table above shows the total number of patients where the observer's scores and the patient's FPS-R score align and where it does not align. To create the subset of data where the score matches, we use the following: 
 
@@ -235,3 +235,9 @@ Rogers TL, Ostrow CL. The use of EMLA cream to decrease venipuncture pain in chi
 \newpage
 
 # Appendix
+
+## For client
+
+## For mentor
+
+
