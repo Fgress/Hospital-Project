@@ -7,6 +7,13 @@ date: "21 February 2024"
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 #Set up echo as false to not print the R code in the report
+
+library(readxl)
+library(ggplot2)
+library(tidyverse)
+ggplot2::theme_set(theme_classic())
+options(repr.plot.width=15, repr.plot.height=7.5)
+library(gridExtra)
 ```
 
 
@@ -24,3 +31,207 @@ knitr::opts_chunk$set(echo = FALSE)
 \newpage
 
 # Summary
+
+This study compares the efficacy of two approaches: Ametop alone and Ametop combined with a vapocoolant spray, in alleviating pain during IV insertion. In the experiment, pain levels were assessed alongside secondary outcomes. Statistical analyses revealed that the addition of vapocoolant spray may not significantly reduce discomfort in pediatric patients. However, age, number of IV attempts, and practitioner's role emerged as significant factors influencing pain levels, highlighting the importance of personalized care in pediatric anesthesia practices. These findings contribute to optimizing pain management strategies and improving patient outcomes in pediatric anesthesia.
+
+# Introduction 
+
+Pediatric patients commonly experience anxiety and discomfort during IV insertion. In this study, we aim to compare the efficacy of two pain management strategies to improve pediatric anesthesia practices and alleviate the pain associated with this procedure: Ametop alone and its combination with a vapocoolant spray. The research employed a randomized controlled trial to assess pain levels experienced by children, while also exploring secondary outcomes such as the impact of provider experience, gender, and age-related differences in pain perception. Our statistical analysis will utilize a t-test to assess the primary outcome of pain reduction due to the addition of vapocoolant spray, a linear regression analysis to investigate the impact of other factors on pain levels and pie charts to visualize the distribution of side effects.
+
+# Data description 
+The study retrospectively collected data from 240 pediatric patients undergoing intravenous (IV) insertion. There were 9 controlled variables to ensure the consistency of the participants in the experiment. Some participants withdrew from the study, citing reasons such as conversion to inhalation induction, Ametop-induced itchiness requiring removal. As these cases lacked sufficient information in recording the response variables, the missing variables cannot be addressed through imputations or other methods. Consequently, we excluded these 17 observations, focusing solely on the remaining 223 observations for main and secondary objective 1.
+The dataset has several key variables, categorized as follows:
+
+
+- **Patient Demographics:** This includes variables such as age, gender, and ASA classification, which are crucial for subgroup analyses. Age (5-16 years old) is particularly important for determining if responses to pain management strategies vary among different pediatric age groups.
+- **Treatment Group Randomization:** Patients are randomly assigned to one of two groups: Group 1, receiving Ametop alone (the control group), and Group 2, receiving both Ametop and the vapocoolant spray (the study group). This randomization is essential for assessing the comparative effectiveness of the two treatment approaches.
+- **FPS-R Scores:** Patients rated their pain using the FPS-R scale from 0 (no pain) to 10 (worst pain possible), offering a measurable discomfort level during IV insertion. This score determines the primary outcome, comparing the effectiveness of treatment approaches.
+- **Observer’s Scores:** The patients’ discomfort is observed and rated by a nurse on a 3-point scale: ‘none,’ ‘slight,’ or ‘severe’ to capture visible signs of discomfort or pain. This complements FPS-R scores, ensuring reliable pain assessment in children, as some children may be playful or may not fully understand the meaning of the pictograms provided. 
+- **Number of IV Attempts:** This variable records the number of attempts required to successfully insert the IV, reflecting the procedural difficulty and its potential correlation with patient discomfort.
+- **Needle Gauge:** The size of the needle used, differentiated as “22” being slightly larger than “24,” was accounted for in the analysis due to its potential influence on discomfort levels.
+- **Practitioner’s role:** The practitioner is either a resident or an anesthetist which may result in a difference in pain level felt by the patient.
+- **Side Effects:** Side effects were monitored to ensure uniform treatment across participants.
+
+# Methods
+
+**Main Objective: Does the combination of Ametop with a vapocoolant spray significantly reduce the discomfort experienced by pediatric patients during IV insertions, compared to the application of Ametop alone?**
+
+The main challenge in assessing our primary objective lies in the presence of two target responses: the FPS-R scores selected by the patients and the observer's scores. Accurately measuring pain in children using FPS-R scores alone can be difficult, as some children may be playful or might not fully comprehend the pictograms provided. Thus, the observer’s scores serve as an additional target response, intended to confirm the reliability of the FPS-R scores. While the patient’s FPS-R score remains the focal point, its alignment with the observer’s scores is necessary. Consequently, we will conduct the statistical analysis and testing in two ways: a test covering the entire dataset, and a second test limited to a subset of data where the observer's scores and the patient's FPS-R score align.
+
+(table)
+
+The table above shows the total number of patients where the observer's scores and the patient's FPS-R score align and where it does not align. To create the subset of data where the score matches, we use the following: 
+
+* FPS-R scores 0 and 2 matched with the observer’s score 'None' = 135 patients
+* FPS-R scores 4 and 6 matched with the observer’s score 'Slight Pain' = 24 patients
+* FPS-R scores 8 and 10 matched with the observer’s score 'Severe Pain' = 5 patients
+
+Before carrying out the statistical test, we will perform exploratory data analysis to examine the distribution of the target response, the FPS-R score.
+
+```{r, out.width="75%"}
+# Read data
+file_path <- "data/Ametop-PE data(new-Alex)(1control 2study).xlsx"
+original_data <- read_excel(file_path)
+
+# Save original data for side effects analysis
+data <- original_data
+
+# Remove withdrawn patients
+data <- data[data$`Withdrawn after consent?` != "Yes", ]
+
+# Remove unnecessary variables
+data <- select(data, 
+               -`Elective surgery requiring IV?`,
+               -`ASA I or II?`,
+               -`Aged 5-16?`,
+               -`Any allergies to Ametop, Pain Ease, or Tagederm adhesive?`,
+               -`Ametop placed at least 30min before estimated IV start time?`,
+               -`Receiving sedative pre-medication / anxiolytics?`,
+               -`Needle phobia?`,
+               -`Planned inhalation induction?`,
+               -`Developmental delay or unable to interpret FPS-R?`,
+               -`Time Ametop applied`,
+               -`Time Ametop removed`,
+               -`Time of skin puncture`,
+               -`Record ID`,
+               -`Complete?`,
+               -`Withdrawn after consent?`,
+               -`Reason for withdrawal`,
+               -`Other reason for withdrawal`)
+
+# Shorten the data
+data$`Reaction to skin puncture` <- gsub("^(Slight|Severe).*", "\\1 Pain",
+                                         data$`Reaction to skin puncture`)
+
+data$`Observer Number` <- case_when(
+  data$`Reaction to skin puncture` == "None" ~ 1,
+  data$`Reaction to skin puncture` == "Slight Pain" ~ 2,
+  data$`Reaction to skin puncture` == "Severe Pain" ~ 3
+)
+
+# Create 'FPS-R Number'
+data$`FPS-R Number` <- case_when(
+  data$`FPS-R score` %in% c(0, 2) ~ 1,
+  data$`FPS-R score` %in% c(4, 6) ~ 2,
+  data$`FPS-R score` %in% c(8, 10) ~ 3
+)
+
+# Create 'Match Responses'
+data$`Match Responses` <- ifelse(data$`Observer Number` == data$`FPS-R Number`, "Yes", "No")
+
+# Create data subset for match data
+data_subset <- data[data$`Match Responses` == 'Yes',]
+
+# Boxplot
+plot3 <- data %>% filter(Randomization == 1) %>%
+  ggplot(aes(`FPS-R score`)) +
+  geom_boxplot() +
+  labs(title = "Full Data Control Group Boxplot")
+
+plot4 <- data %>% filter(Randomization == 2) %>%
+  ggplot(aes(`FPS-R score`)) +
+  geom_boxplot() +
+  labs(title = "Full Data Study Group Boxplot")
+
+# Boxplot
+library(gridExtra)
+plot5 <- data %>% filter(Randomization == 1, `Match Responses` == "Yes") %>%
+  ggplot(aes(`FPS-R score`)) +
+  geom_boxplot() +
+  labs(title = "Match Subset Control Group Boxplot")
+
+plot6 <- data %>% filter(Randomization == 2, `Match Responses` == "Yes") %>%
+  ggplot(aes(`FPS-R score`)) +
+  geom_boxplot() +
+  labs(title = "Match Subset Study Group Boxplot")
+
+grid.arrange(plot3, plot4, plot5, plot6, ncol = 2, nrow = 2)
+```
+
+From the boxplot, we observe that the median FPS-R score for both the control and treatment groups is 2. The treatment group's data shows a higher concentration of scores at FPS-R 0 and 2, and is right-skewed. When examining the boxplot of the subset of data where the FPS-R scores and observer's scores align, their distributions do not appear significantly different. 
+
+The statistical method used to assess whether the addition of vapocoolant spray reduces discomfort is the Welch Two Sample T-Test. This test is applied under the assumption that the differences between the control group and the study group follow a Normal distribution, as per the Central Limit Theorem (CLT). We conduct the t-test twice: first on the entire dataset, and second on the subset of data where the FPS-R scores and observer’s scores match. The null hypothesis is that the mean pain level is the same for both treatment groups, while the alternative hypothesis is that the mean pain level is lower for the treatment group using the vapocoolant spray compared to the group using Ametop alone. Thus, the test is a one-sided t-test. In accordance with Dr. Louis Scheepers' recommendation, the threshold for p-value significance is set at a 5% significance level.
+
+**Secondary Objective 1: Do age, gender, the practitioner’s role, the number of IV attempts, and the needle gauge used to influence the level of pain experienced by pediatric patients during IV insertion?**
+
+To examine the objective at hand, we constructed two models on the matched subset data for consistency with the first objective. The first model included only the listed five main effects, serving as the base model while the second model introduced interaction effects. The null hypothesis posited that there is no relationship between the dependent variables and the FPS-R Score, while the alternative hypothesis suggested the presence of such a relationship.
+
+Firstly, we conducted linear regression solely on the main effects, adhering to a 5% significance level. Secondly, we investigated how the relationship between one categorical factor and the FPS-R score depends on the value of the second categorical factor. We grouped the age variable into two groups, 5-10 and 11-16 to consider children’s development. Additionally, we categorized the number of IV attempts into low and high. Then, we paired all five main effects and generated interaction plots. If the lines intersect, indicating an interaction between the selected two variables, we included the interaction term in the regression model. Once all terms, including the interaction effects, were incorporated, we performed linear regression again.
+
+**Secondary Objective 2: The incidence of side effects due to Ametop or the vapocoolant spray.**
+	
+**Study Design and Participants**
+All participants initially included in the study were considered in the analysis, even those who withdrew before its conclusion, to consider patients who withdrew due to experiencing side effects and preserving the comprehensive nature of the data. Thus, all 240 participants of the study are included in this objective’s analysis.
+
+**Side Effects Categorization**
+Categories of observed side effects were extracted from the ‘Observed side effects’ column, where side effects of patients ranged from “Slight redness of skin from Ametop” to “quite red & itchy skin from Ametop. Underlying eczema.” These reports were categorized into distinct groups such as the individual side effect “Redness” and the combined side effect “Redness + Itching” to facilitate the quantitative analysis of side effects. 
+
+# Result
+
+**Main Objective: Does the combination of Ametop with a vapocoolant spray significantly reduce the discomfort experienced by pediatric patients during IV insertions, compared to the application of Ametop alone?**
+
+Using the entire dataset, the result of the Welch Two Sample T-Test yields a p-value of 0.02258. This suggests that we can reject the null hypothesis at a 5% significance level, indicating that the mean pain level is not the same for both the control and study groups. This supports the idea that the addition of vapocoolant spray may reduce discomfort in pediatric patients.
+
+However, when conducting the t-test on the subset of data where the FPS-R scores and observer's scores align, we obtain a p-value of 0.0594. This suggests that we cannot reject the null hypothesis at a 5% significance level, indicating that the mean pain level is the same for both the control and study groups, and we cannot conclude that the vapocoolant spray reduces discomfort.
+
+**Secondary Objective 1: Do age, gender, the practitioner’s role, the number of IV attempts, and the needle gauge used to influence the level of pain experienced by pediatric patients during IV insertion?**
+
+**Base Model:**
+
+**Age:** The coefficient for Age is -0.11476, which is statistically significant (p < 0.05). This implies that for each additional year of age, the FPS-R score decreases by approximately 0.115 points, suggesting that older children experience slightly less discomfort during IV insertions.
+
+**Number of IV Attempts:** This coefficient is positive and significant (p < 0.05), indicating that an increased number of IV attempts is associated with a higher FPS-R score, suggesting greater discomfort with more attempts.
+
+Out of 5 main effects (age, gender, the practitioner’s role, the number of IV attempts, and the needle gauge) in the base model, only the above two are significant.
+
+**Interaction Model:**
+
+There are several significant interactions gathered from the interaction plot: Sex and Age, Sex and Needle gauge, Sex and Practitioner, Age and Needle gauge, Age and Practitioner, Number of IV attempts and Practitioner. All these interactions and the five main effects are included in this more comprehensive regression model. (Interaction plots attached in appendix)
+
+**Age and Practitioner Interaction:** The interaction between age and practitioner type is also significant (p < 0.05) with a negative coefficient (-0.412774). This indicates that the effect of a resident performing the procedure has a differential impact based on the patient's age. Specifically, the increase in discomfort associated with a resident performing the IV insertion diminishes as the patient gets older.
+
+**Practitioner:** There was a significant positive coefficient for practitioners with resident status (p < 0.05), suggesting that when residents instead of anesthetists performed the IV insertion, there was an increase in the FPS-R score, which could be interpreted as an increase in perceived discomfort.
+
+These results suggest that the discomfort during IV insertions is influenced not just by the number of attempts or the age of the patient but also by the experience level of the practitioner, and this effect varies with the age of the patient. It highlights the importance of considering these interactions when planning and training for IV insertions to optimize patient comfort.
+
+**Secondary Objective 2: The incidence of side effects due to Ametop or the vapocoolant spray.**
+
+**Overall Tolerance**
+
+Figure 1: Observed Side Effects
+As illustrated in Figure 1, the vast majority of the study participants, 95%, reported no side effects, indicating a high level of tolerance for both treatments. Within the 5% of patients experiencing side effects, only 2.1% were attributed to the use of Ametop alone, whereas the incidence of side effects from the combination treatment was higher, at 2.9%.
+
+**Side Effects in Ametop Alone Group**
+
+
+Figure 2: Combination Side Effects Distribution - Ametop Alone
+Figure 3: Individual Side Effects Distribution - Ametop Alone
+
+Figure 2 and Figure 3 present the distribution of side effects among patients treated with Ametop alone. Figure 2 shows that among those who reported side effects, 60% experienced redness only, while 40% experienced both redness and itching. No other combinations of side effects were reported. This suggests a tendency for side effects to present as redness alone or in conjunction with itching. Figure 3 further highlights that redness is the more prevalent individual side effect, reported by 71.4% of patients experiencing side effects, while itching was reported by 28.6%.
+
+**Side Effects in Ametop with Vapocoolant Spray Group**
+
+
+Figure 4: Combination Side Effects Distribution - Ametop + Spray
+Figure 5: Individual Side Effects Distribution - Ametop + Spray
+
+For patients treated with both Ametop and a vapocoolant spray, Figure 4 and Figure 5 depict the side effects. Figure 4 reveals a varied response, with redness alone constituting 57.1% of side effects, and pain, puffiness, and redness with itching each accounting for 14.3%. Figure 5 indicates that redness remains the most reported individual side effect at 62.5%, with itching, pain, and puffiness equally reported at 12.5% each.
+
+# Conclusion
+
+The conclusion of our main objective, which is to determine whether the addition of vapocoolant spray significantly reduces discomfort experienced by pediatric patients during IV insertions compared to Ametop alone, depends on the dataset used. When analyzing the full dataset, the results suggest that the addition of vapocoolant spray does significantly reduce discomfort. However, when examining the subset of data where the FPS-R scores and observer's scores align, there appears to be no significant difference in discomfort between the control and study groups. We favor the results from the subset data as it indicates more reliable and higher-quality data. Nonetheless, we acknowledge limitations in how the data is subsetted and plan to discuss with the client in our second meeting potential alternative methods for subsetting the data to improve results without introducing bias or removing too many observations.
+
+Regarding our secondary objective, which is to identify other variables that influence the level of pain experienced by pediatric patients during IV insertion, we conclude that age, number of IV attempts, and practitioner's role are significant factors. It emphasizes the significance of taking these factors into account during IV insertions to alleviate patients' discomfort. A limitation observed in this regression method is that the data does not appear to be exactly normally distributed, as indicated by the QQ plot, which shows a heavy-tailed distribution. However, since the group is focusing on inference rather than prediction, and considering the Central Limit Theorem (CLT) assumption, we will still proceed with using linear regression for our analysis.
+
+The inability to reject the null hypothesis in our main objective could be explained by the significant variables found in the regression model. Age, practitioner roles, and number of IV attempts have been identified as significant in influencing pain levels. Segmenting the data differently, perhaps by excluding certain age groups, number of IV attempts, or practitioner roles, might yield different results. Our next step is to retest the main objective, assessing whether there is a difference in the FPS-R scores between the control and study groups when segmented by age, practitioner role, and number of IV attempts, to see if this impacts the results in any way.
+
+In analyzing the side effects of Ametop and its combination with a vapocoolant spray, it's evident that the majority of patients (95%) experience no side effects, underlining the treatments’ high tolerance. Among the 5% that do report side effects, the occurrences are mild, such as redness or itchiness. For those treated with Ametop alone, side effects were predominantly redness, either alone or accompanied by itching, which is valuable information for healthcare providers assessing the drug’s tolerability. On the other hand, the combination treatment group presented a more varied range of side effects, with equal instances of itching, pain, and puffiness, in addition to redness. However, we were not sure whether the side effect was a result of the Ametop or the spray for the treatment group. Overall, the observed variations in side effect profiles highlight the significance of personalized patient care and the broad range of reactions suggests that clinicians must exercise careful consideration when prescribing treatments.
+
+\newpage
+
+# References
+Rogers TL, Ostrow CL. The use of EMLA cream to decrease venipuncture pain in children. Journal of Pediatric Nursing. 2004 Feb 1;19(1):33-9.
+
+\newpage
+
+# Appendix
