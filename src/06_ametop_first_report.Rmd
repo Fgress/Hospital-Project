@@ -88,6 +88,9 @@ data$`FPS-R Number` <- case_when(
 
 # Create 'Match Responses'
 data$`Match Responses` <- ifelse(data$`Observer Number` == data$`FPS-R Number`, "Yes", "No")
+
+#Create data subset for match data
+data_subset <- data[data$`Match Responses` == 'Yes',]
 ```
 
 ```{r}
@@ -165,14 +168,15 @@ print(table)
 
 ```{r}
 # Perform t-test on full data
-t_test_full <- t.test(data[data$Randomization == 1, ]$`FPS-R score`,
-                      data[data$Randomization == 2, ]$`FPS-R score`)
+t_test_full <- t.test(data[data$Randomization == 2, ]$`FPS-R score`,
+                      data[data$Randomization == 1, ]$`FPS-R score`,
+                      alternative = c("less"))
 print(t_test_full)
 
 # Perform t-test on subset of data
-data_subset <- data[data$`Match Responses` == 'Yes',]
-t_test_subset <- t.test(data_subset[data_subset$Randomization == 1, ]$`FPS-R score`,
-                        data_subset[data_subset$Randomization == 2, ]$`FPS-R score`)
+t_test_subset <- t.test(data_subset[data_subset$Randomization == 2, ]$`FPS-R score`,
+                        data_subset[data_subset$Randomization == 1, ]$`FPS-R score`, 
+                        alternative = c("less"))
 print(t_test_subset)
 
 # Conclusion: We should only reject the null hypothesis based on the full dataset.
@@ -186,16 +190,17 @@ print(t_test_subset)
 
 ```{r}
 # Only use match subset data
-data = data[data$`Match Responses` == "Yes",]
 
 # Convert continuous variables to categorical factors
-data$Age_Group <- cut(data$Age, breaks = 2, labels = c("5-10", "11-16")) 
-data$IV_Attempts_Group <- cut(data$`Number of IV attempts`, breaks = 2, labels = c("Low", "High"))
+data_subset$Age_Group <- cut(data_subset$Age, 
+                             breaks = 2, labels = c("5-10", "11-16")) 
+data_subset$IV_Attempts_Group <- cut(data_subset$`Number of IV attempts`, 
+                                     breaks = 2, labels = c("Low", "High"))
 
 # Make sure all categorical variables are treated as factors
-data$`Needle gauge` <- as.factor(data$`Needle gauge`)
-data$Sex <- as.factor(data$Sex)
-data$Practitioner <- as.factor(data$Practitioner)
+data_subset$`Needle gauge` <- as.factor(data_subset$`Needle gauge`)
+data_subset$Sex <- as.factor(data_subset$Sex)
+data_subset$Practitioner <- as.factor(data_subset$Practitioner)
 
 # List of categorical variables
 categorical_vars <- c("Sex", "Age_Group", "IV_Attempts_Group", "Needle gauge", "Practitioner")
@@ -204,9 +209,9 @@ categorical_vars <- c("Sex", "Age_Group", "IV_Attempts_Group", "Needle gauge", "
 for (x_var in categorical_vars) {
   for (trace_var in categorical_vars) {
     if (x_var != trace_var) {  # Avoid plotting a variable against itself
-      interaction.plot(x.factor = data[[x_var]],
-                       trace.factor = data[[trace_var]],
-                       response = data$`FPS-R score`,
+      interaction.plot(x.factor = data_subset[[x_var]],
+                       trace.factor = data_subset[[trace_var]],
+                       response = data_subset$`FPS-R score`,
                        type = "b",
                        pch = 19,
                        xlab = x_var,
