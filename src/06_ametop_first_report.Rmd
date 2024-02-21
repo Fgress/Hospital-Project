@@ -10,6 +10,7 @@ output:
 library(readxl)
 library(ggplot2)
 library(tidyverse)
+library(patchwork)
 ggplot2::theme_set(theme_classic())
 options(repr.plot.width=15, repr.plot.height=7.5)
 ```
@@ -135,9 +136,6 @@ plot6 <- data %>% filter(Randomization == 2, `Match Responses` == "Yes") %>%
   ggplot(aes(`FPS-R score`)) +
   geom_boxplot() +
   labs(title = "Match Subset Data Group 2 Boxplot")
-
-# Load the patchwork library
-library(patchwork)
 
 # Combine the plots
 cat("Group 1 = Control group\nGroup 2 = Study group")
