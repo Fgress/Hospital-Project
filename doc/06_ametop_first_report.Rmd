@@ -6,14 +6,14 @@ date: "21 February 2024"
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
-#Set up echo as false to not print the R code in the report
+# Set up echo as false to not print the R code in the report
 
 library(readxl)
 library(ggplot2)
 library(tidyverse)
+library(gridExtra)
 ggplot2::theme_set(theme_classic())
 options(repr.plot.width=15, repr.plot.height=7.5)
-library(gridExtra)
 ```
 
 
@@ -22,7 +22,7 @@ library(gridExtra)
 
 - Maggie Ruan
 
-- Runhe Gao
+- Runhe Guo
 
 - Yimin You
 
@@ -58,7 +58,7 @@ The dataset has several key variables, categorized as follows:
 
 The main challenge in assessing our primary objective lies in the presence of two target responses: the FPS-R scores selected by the patients and the observer's scores. Accurately measuring pain in children using FPS-R scores alone can be difficult, as some children may be playful or might not fully comprehend the pictograms provided. Thus, the observer’s scores serve as an additional target response, intended to confirm the reliability of the FPS-R scores. While the patient’s FPS-R score remains the focal point, its alignment with the observer’s scores is necessary. Consequently, we will conduct the statistical analysis and testing in two ways: a test covering the entire dataset, and a second test limited to a subset of data where the observer's scores and the patient's FPS-R score align.
 
-![Count of matches in data](misc/Table.png){width=75%}
+![Count of matches in data](../misc/Table.png){width=75%}
 
 The table above shows the total number of patients where the observer's scores and the patient's FPS-R score align and where it does not align. To create the subset of data where the score matches, we use the following: 
 
@@ -70,7 +70,7 @@ Before carrying out the statistical test, we will perform exploratory data analy
 
 ```{r, out.width="75%"}
 # Read data
-file_path <- "data/Ametop-PE data(new-Alex)(1control 2study).xlsx"
+file_path <- "../data/Ametop-PE data(new-Alex)(1control 2study).xlsx"
 original_data <- read_excel(file_path)
 
 # Save original data for side effects analysis
@@ -247,7 +247,7 @@ Rogers TL, Ostrow CL. The use of EMLA cream to decrease venipuncture pain in chi
 
 ```{r, echo=TRUE}
 # Read data
-file_path <- "data/Ametop-PE data(new-Alex)(1control 2study).xlsx"
+file_path <- "../data/Ametop-PE data(new-Alex)(1control 2study).xlsx"
 original_data <- read_excel(file_path)
 
 # Save original data for side effects analysis
@@ -651,5 +651,7 @@ side_effects_data_study_group <- categorize_and_print(2)
 draw_pie_chart_combined(side_effects_data_study_group,
                         "Combination Side Effects Distribution - Ametop + Spray")
 
-# Pie Chart for individual categorie
-
+# Pie Chart for individual categories
+draw_pie_chart_individual(side_effects_data_study_group,
+                          "Individual Side Effects Distribution - Ametop + Spray")
+```
