@@ -4,6 +4,14 @@ output: pdf_document
 date: "21 February 2024"
 header-includes:
    - \usepackage{multirow}
+   - \usepackage{float}
+     \let\origfigure\figure
+     \let\endorigfigure\endfigure
+     \renewenvironment{figure}[1][2] {
+     \expandafter\origfigure\expandafter[H]
+     } {
+     \endorigfigure
+     }
 ---
 
 ```{r setup, include=FALSE}
@@ -78,7 +86,7 @@ The main challenge in assessing our primary objective lies in the presence of tw
 \caption{Count of matches in data}
 \end{table}
 
-Figure 1 shows the total number of patients where the observer's scores and the patient's FPS-R score align and where it does not align. To create the subset of data where the score matches, we use the following: 
+Table 1 shows the total number of patients where the observer's scores and the patient's FPS-R score align and where it does not align. To create the subset of data where the score matches, we use the following: 
 
 * FPS-R scores 0 and 2 matched with the observer’s score 'None' = 135 patients
 * FPS-R scores 4 and 6 matched with the observer’s score 'Slight Pain' = 24 patients
@@ -86,7 +94,7 @@ Figure 1 shows the total number of patients where the observer's scores and the 
 
 Before carrying out the statistical test, we will perform exploratory data analysis to examine the distribution of the target response, the FPS-R score.
 
-```{r, out.width="75%", fig.align='center'}
+```{r, out.width="75%", fig.align='center', fig.cap = "Boxplots of Control and Study Group for Full and Subset Data"}
 # Read data
 file_path <- "../data/Ametop-PE data(new-Alex)(1control 2study).xlsx"
 original_data <- read_excel(file_path)
@@ -166,9 +174,7 @@ plot6 <- data %>% filter(Randomization == 2, `Match Responses` == "Yes") %>%
 grid.arrange(plot3, plot4, plot5, plot6, ncol = 2, nrow = 2)
 ```
 
-Figure 2: Boxplots of Control and Study Group for Full and Subset Data
-
-From Figure 2, we observe that the median FPS-R score for both the control and treatment groups is 2. The treatment group's data shows a higher concentration of scores at FPS-R 0 and 2, and is right-skewed. When examining the boxplot of the subset of data where the FPS-R scores and observer's scores align, their distributions do not appear significantly different. 
+From Figure 1, we observe that the median FPS-R score for both the control and treatment groups is 2. The treatment group's data shows a higher concentration of scores at FPS-R 0 and 2, and is right-skewed. When examining the boxplot of the subset of data where the FPS-R scores and observer's scores align, their distributions do not appear significantly different. 
 
 The statistical method used to assess whether the addition of vapocoolant spray reduces discomfort is the Welch Two Sample T-Test. This test is applied under the assumption that the differences between the control group and the study group follow a Normal distribution, as per the Central Limit Theorem (CLT). We conduct the t-test twice: first on the entire dataset, and second on the subset of data where the FPS-R scores and observer’s scores match. The null hypothesis is that the mean pain level is the same for both treatment groups, while the alternative hypothesis is that the mean pain level is lower for the treatment group using the vapocoolant spray compared to the group using Ametop alone. Thus, the test is a one-sided t-test. In accordance with Dr. Louis Scheepers' recommendation, the threshold for p-value significance is set at a 5% significance level.
 
@@ -238,7 +244,7 @@ draw_pie_chart <- function(all_categories, title) {
 }
 ```
 
-```{r, fig.align='center'}
+```{r, fig.align='center', fig.cap = "Observed Side Effects"}
 # Summarize "Any side effects observed?" column
 side_effects_observed_summary <- data.frame(
   ifelse(original_data$`Any side effects observed?` == "No", "No Side Effect",
@@ -249,9 +255,8 @@ side_effects_observed_summary <- data.frame(
 # Create a pie chart for the observed side effects
 draw_pie_chart(side_effects_observed_summary, "Observed Side Effects")
 ```
-Figure 3: Observed Side Effects 
 
-As illustrated in Figure 3, the vast majority of the study participants, 95%, reported no side effects, indicating a high level of tolerance for both treatments. Within the 5% of patients experiencing side effects, only 2.1% were attributed to the use of Ametop alone, whereas the incidence of side effects from the combination treatment was higher, at 2.9%.
+As illustrated in Figure 2, the vast majority of the study participants, 95%, reported no side effects, indicating a high level of tolerance for both treatments. Within the 5% of patients experiencing side effects, only 2.1% were attributed to the use of Ametop alone, whereas the incidence of side effects from the combination treatment was higher, at 2.9%.
 
 **Side Effects in Ametop Alone Group**
 
@@ -330,7 +335,7 @@ draw_pie_chart_individual <- function(side_effects_data, title) {
 }
 ```
 
-```{r, fig.align='center'}
+```{r, fig.align='center', fig.cap = "Combination Side Effects Distribution - Ametop alone"}
 # Get the side effects data for the control group
 side_effects_data_control_group <- categorize_and_print(1)
 
@@ -339,21 +344,17 @@ draw_pie_chart_combined(side_effects_data_control_group,
                         "Combination Side Effects Distribution - Ametop alone")
 ```
 
-Figure 4: Combination Side Effects Distribution - Ametop Alone
-
-```{r, fig.align='center'}
+```{r, fig.align='center', fig.cap = "Individual Side Effects Distribution - Ametop alone"}
 # Pie Chart for individual categories
 draw_pie_chart_individual(side_effects_data_control_group,
                           "Individual Side Effects Distribution - Ametop alone")
 ```
 
-Figure 5: Individual Side Effects Distribution - Ametop Alone
-
-Figure 4 and Figure 5 present the distribution of side effects among patients treated with Ametop alone. Figure 4 shows that among those who reported side effects, 60% experienced redness only, while 40% experienced both redness and itching. No other combinations of side effects were reported. This suggests a tendency for side effects to present as redness alone or in conjunction with itching. Figure 5 further highlights that redness is the more prevalent individual side effect, reported by 71.4% of patients experiencing side effects, while itching was reported by 28.6%.
+Figure 3 and Figure 4 present the distribution of side effects among patients treated with Ametop alone. Figure 3 shows that among those who reported side effects, 60% experienced redness only, while 40% experienced both redness and itching. No other combinations of side effects were reported. This suggests a tendency for side effects to present as redness alone or in conjunction with itching. Figure 4 further highlights that redness is the more prevalent individual side effect, reported by 71.4% of patients experiencing side effects, while itching was reported by 28.6%.
 
 **Side Effects in Ametop with Vapocoolant Spray Group**
 
-```{r, fig.align='center'}
+```{r, fig.align='center', fig.cap = "Combination Side Effects Distribution - Ametop + Spray"}
 # Get the side effects data for the study group
 side_effects_data_study_group <- categorize_and_print(2)
 
@@ -362,17 +363,13 @@ draw_pie_chart_combined(side_effects_data_study_group,
                         "Combination Side Effects Distribution - Ametop + Spray")
 ```
 
-Figure 6: Combination Side Effects Distribution - Ametop + Spray
-
-```{r, fig.align='center'}
+```{r, fig.align='center', fig.cap = "Individual Side Effects Distribution - Ametop + Spray"}
 # Pie Chart for individual categories
 draw_pie_chart_individual(side_effects_data_study_group,
                           "Individual Side Effects Distribution - Ametop + Spray")
 ```
 
-Figure 7: Individual Side Effects Distribution - Ametop + Spray
-
-For patients treated with both Ametop and a vapocoolant spray, Figure 6 and Figure 7 depict the side effects. Figure 6 reveals a varied response, with redness alone constituting 57.1% of side effects, and pain, puffiness, and redness with itching each accounting for 14.3%. Figure 7 indicates that redness remains the most reported individual side effect at 62.5%, with itching, pain, and puffiness equally reported at 12.5% each.
+For patients treated with both Ametop and a vapocoolant spray, Figure 5 and Figure 6 depict the side effects. Figure 5 reveals a varied response, with redness alone constituting 57.1% of side effects, and pain, puffiness, and redness with itching each accounting for 14.3%. Figure 6 indicates that redness remains the most reported individual side effect at 62.5%, with itching, pain, and puffiness equally reported at 12.5% each.
 
 # Conclusion
 
