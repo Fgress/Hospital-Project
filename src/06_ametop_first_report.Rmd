@@ -2,6 +2,8 @@
 title: "First Draft Report: Group 6 Ametop Study with Dr. Louis Scheepers"
 output: pdf_document
 date: "21 February 2024"
+header-includes:
+   - \usepackage{multirow}
 ---
 
 ```{r setup, include=FALSE}
@@ -58,7 +60,23 @@ The dataset has several key variables, categorized as follows:
 
 The main challenge in assessing our primary objective lies in the presence of two target responses: the FPS-R scores selected by the patients and the observer's scores. Accurately measuring pain in children using FPS-R scores alone can be difficult, as some children may be playful or might not fully comprehend the pictograms provided. Thus, the observer’s scores serve as an additional target response, intended to confirm the reliability of the FPS-R scores. While the patient’s FPS-R score remains the focal point, its alignment with the observer’s scores is necessary. Consequently, we will conduct the statistical analysis and testing in two ways: a test covering the entire dataset, and a second test limited to a subset of data where the observer's scores and the patient's FPS-R score align.
 
-![Count of matches in data](../misc/Table.png){width=75%}
+\begin{table}[ht]
+\centering
+\begin{tabular}{|c|c|c|c|c|}
+    \hline
+    \multicolumn{2}{|c|}{} & \multicolumn{3}{c|}{FPS-R Score}\\
+    \cline{3-5}
+    \multicolumn{2}{|c|}{\multirow{-2}{*}{}} & 0 \& 2 & 4 \& 6 & 8 \& 10\\
+    \hline
+    \multirow{3}{*}{\rotatebox{90}{Observer's Score}} & Severe & 0 & 0 & 5\\[0.46cm]
+    \cline{2-5}
+    & Slight & 24 & 24 & 12\\[0.46cm]
+    \cline{2-5}
+    & None & 135 & 20 & 3\\[0.46cm]
+    \hline
+\end{tabular}
+\caption{Count of matches in data}
+\end{table}
 
 Figure 1 shows the total number of patients where the observer's scores and the patient's FPS-R score align and where it does not align. To create the subset of data where the score matches, we use the following: 
 
