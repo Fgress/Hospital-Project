@@ -425,6 +425,7 @@ data_subset$Practitioner <- as.factor(data_subset$Practitioner)
 
 # List of categorical variables
 categorical_vars <- c("Sex", "Age_Group", "IV_Attempts_Group", "Needle gauge", "Practitioner")
+print(paste0("Categorical variables: ", paste(categorical_vars, collapse = ", ")))
 
 # Create interaction plots for all pairs of categorical variables
 for (x_var in categorical_vars) {
@@ -533,18 +534,18 @@ draw_pie_chart <- function(all_categories, title) {
       main = title,
       col = rainbow(length(category_counts)),
       labels = labels,
-      cex = 0.8)
+      cex = 0.6)
 }
 ```
 
-#### Pie chart for Observed side effects (No / Yes - Ametop alone / Yes - Ametop + vapocoolant spray)
+#### Pie chart for Observed side effects (No / Yes - Ametop alone / Yes - Ametop + spray)
 
 ```{r, echo=TRUE, fig.align='center'}
 # Summarize "Any side effects observed?" column
 side_effects_observed_summary <- data.frame(
   ifelse(original_data$`Any side effects observed?` == "No", "No Side Effect",
          ifelse(original_data$Randomization == 1, "Side Effect (Ametop alone)",
-                "Side Effect (Ametop + vapocoolant spray)"))
+                "Side Effect (Ametop + spray)"))
 )
 
 # Create a pie chart for the observed side effects
