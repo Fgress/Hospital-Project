@@ -148,7 +148,7 @@ data$`Match Responses` <- ifelse(data$`Observer Number` == data$`FPS-R Number`, 
 # Create data subset for match data
 data_subset <- data[data$`Match Responses` == 'Yes',]
 
-# Boxplot
+# Boxplots
 plot3 <- data %>% filter(Randomization == 1) %>%
   ggplot(aes(`FPS-R score`)) +
   geom_boxplot() +
@@ -159,8 +159,6 @@ plot4 <- data %>% filter(Randomization == 2) %>%
   geom_boxplot() +
   labs(title = "Full Data Study Group Boxplot")
 
-# Boxplot
-library(gridExtra)
 plot5 <- data %>% filter(Randomization == 1, `Match Responses` == "Yes") %>%
   ggplot(aes(`FPS-R score`)) +
   geom_boxplot() +
@@ -596,7 +594,7 @@ head(data)
 #### Histrograms and boxplots
 
 ```{r, echo=TRUE, fig.align='center'}
-# Histogram
+# Histograms
 plot1 <- data %>% filter(Randomization == 1) %>%
   ggplot(aes(`FPS-R score`)) +
   geom_histogram() +
@@ -607,7 +605,7 @@ plot2 <- data %>% filter(Randomization == 2) %>%
   geom_histogram() +
   labs(title = "Group 2 Histogram")
 
-# Boxplot
+# Boxplots
 plot3 <- data %>% filter(Randomization == 1) %>%
   ggplot(aes(`FPS-R score`)) +
   geom_boxplot() +
@@ -618,7 +616,6 @@ plot4 <- data %>% filter(Randomization == 2) %>%
   geom_boxplot() +
   labs(title = "Full Data Group 2 Boxplot")
 
-# Boxplot
 plot5 <- data %>% filter(Randomization == 1, `Match Responses` == "Yes") %>%
   ggplot(aes(`FPS-R score`)) +
   geom_boxplot() +
