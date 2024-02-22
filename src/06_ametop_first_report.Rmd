@@ -1,23 +1,74 @@
 ---
-output:
-  pdf_document: default
-  html_document: default
+title: "First Draft Report: Group 6 Ametop Study with Dr. Louis Scheepers"
+output: pdf_document
+date: "21 February 2024"
 ---
 
-# Import libraries
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+# Set up echo as false to not print the R code in the report
 
-```{r}
 library(readxl)
 library(ggplot2)
 library(tidyverse)
-library(patchwork)
+library(gridExtra)
 ggplot2::theme_set(theme_classic())
-options(repr.plot.width=15, repr.plot.height=7.5)
+options(repr.plot.width=20, repr.plot.height=20)
 ```
 
-# Data cleaning
 
-```{r}
+\begin{center}
+- Fabiola Grace
+
+- Maggie Ruan
+
+- Runhe Guo
+
+- Yimin You
+
+\end{center}
+
+\newpage
+
+# Summary
+
+This study compares the efficacy of two approaches: Ametop alone and Ametop combined with a vapocoolant spray, in alleviating pain during IV insertion. In the experiment, pain levels were assessed alongside secondary outcomes. Statistical analyses revealed that the addition of vapocoolant spray may not significantly reduce discomfort in pediatric patients. However, age, number of IV attempts, and practitioner's role emerged as significant factors influencing pain levels, highlighting the importance of personalized care in pediatric anesthesia practices. These findings contribute to optimizing pain management strategies and improving patient outcomes in pediatric anesthesia.
+
+# Introduction 
+
+Pediatric patients commonly experience anxiety and discomfort during IV insertion. In this study, we aim to compare the efficacy of two pain management strategies to improve pediatric anesthesia practices and alleviate the pain associated with this procedure: Ametop alone and its combination with a vapocoolant spray. The research employed a randomized controlled trial to assess pain levels experienced by children, while also exploring secondary outcomes such as the impact of provider experience, gender, and age-related differences in pain perception. Our statistical analysis will utilize a t-test to assess the primary outcome of pain reduction due to the addition of vapocoolant spray, a linear regression analysis to investigate the impact of other factors on pain levels and pie charts to visualize the distribution of side effects.
+
+# Data description 
+The study retrospectively collected data from 240 pediatric patients undergoing intravenous (IV) insertion. There were 9 controlled variables to ensure the consistency of the participants in the experiment. Some participants withdrew from the study, citing reasons such as conversion to inhalation induction, Ametop-induced itchiness requiring removal. As these cases lacked sufficient information in recording the response variables, the missing variables cannot be addressed through imputations or other methods. Consequently, we excluded these 17 observations, focusing solely on the remaining 223 observations for main and secondary objective 1.
+The dataset has several key variables, categorized as follows:
+
+
+- **Patient Demographics:** This includes variables such as age, gender, and ASA classification, which are crucial for subgroup analyses. Age (5-16 years old) is particularly important for determining if responses to pain management strategies vary among different pediatric age groups.
+- **Treatment Group Randomization:** Patients are randomly assigned to one of two groups: Group 1, receiving Ametop alone (the control group), and Group 2, receiving both Ametop and the vapocoolant spray (the study group). This randomization is essential for assessing the comparative effectiveness of the two treatment approaches.
+- **FPS-R Scores:** Patients rated their pain using the FPS-R scale from 0 (no pain) to 10 (worst pain possible), offering a measurable discomfort level during IV insertion. This score determines the primary outcome, comparing the effectiveness of treatment approaches.
+- **Observer’s Scores:** The patients’ discomfort is observed and rated by a nurse on a 3-point scale: ‘none,’ ‘slight,’ or ‘severe’ to capture visible signs of discomfort or pain. This complements FPS-R scores, ensuring reliable pain assessment in children, as some children may be playful or may not fully understand the meaning of the pictograms provided. 
+- **Number of IV Attempts:** This variable records the number of attempts required to successfully insert the IV, reflecting the procedural difficulty and its potential correlation with patient discomfort.
+- **Needle Gauge:** The size of the needle used, differentiated as “22” being slightly larger than “24,” was accounted for in the analysis due to its potential influence on discomfort levels.
+- **Practitioner’s role:** The practitioner is either a resident or an anesthetist which may result in a difference in pain level felt by the patient.
+- **Side Effects:** Side effects were monitored to ensure uniform treatment across participants.
+
+# Methods
+
+**Main Objective: Does the combination of Ametop with a vapocoolant spray significantly reduce the discomfort experienced by pediatric patients during IV insertions, compared to the application of Ametop alone?**
+
+The main challenge in assessing our primary objective lies in the presence of two target responses: the FPS-R scores selected by the patients and the observer's scores. Accurately measuring pain in children using FPS-R scores alone can be difficult, as some children may be playful or might not fully comprehend the pictograms provided. Thus, the observer’s scores serve as an additional target response, intended to confirm the reliability of the FPS-R scores. While the patient’s FPS-R score remains the focal point, its alignment with the observer’s scores is necessary. Consequently, we will conduct the statistical analysis and testing in two ways: a test covering the entire dataset, and a second test limited to a subset of data where the observer's scores and the patient's FPS-R score align.
+
+![Count of matches in data](../misc/Table.png){width=75%}
+
+Figure 1 shows the total number of patients where the observer's scores and the patient's FPS-R score align and where it does not align. To create the subset of data where the score matches, we use the following: 
+
+* FPS-R scores 0 and 2 matched with the observer’s score 'None' = 135 patients
+* FPS-R scores 4 and 6 matched with the observer’s score 'Slight Pain' = 24 patients
+* FPS-R scores 8 and 10 matched with the observer’s score 'Severe Pain' = 5 patients
+
+Before carrying out the statistical test, we will perform exploratory data analysis to examine the distribution of the target response, the FPS-R score.
+
+```{r, out.width="75%", fig.align='center'}
 # Read data
 file_path <- "../data/Ametop-PE data(new-Alex)(1control 2study).xlsx"
 original_data <- read_excel(file_path)
@@ -47,33 +98,11 @@ data <- select(data,
                -`Withdrawn after consent?`,
                -`Reason for withdrawal`,
                -`Other reason for withdrawal`)
-```
 
-```{r}
-# Check for missing values in all columns except 'Notes' and 'Observed side effects'
-missing_values_summary <- data %>%
-  select(-Notes, -`Observed side effects`) %>%
-  summarise_all(~sum(is.na(.)))
-
-# No missing values found
-print(missing_values_summary)
-```
-
-```{r}
 # Shorten the data
 data$`Reaction to skin puncture` <- gsub("^(Slight|Severe).*", "\\1 Pain",
                                          data$`Reaction to skin puncture`)
 
-# Verify the changes
-table(data$`Reaction to skin puncture`)
-```
-
-# Data preprocessing
-
-```{r}
-# Create new variables for the dataset
-
-# Create 'Observer Number'
 data$`Observer Number` <- case_when(
   data$`Reaction to skin puncture` == "None" ~ 1,
   data$`Reaction to skin puncture` == "Slight Pain" ~ 2,
@@ -92,207 +121,84 @@ data$`Match Responses` <- ifelse(data$`Observer Number` == data$`FPS-R Number`, 
 
 # Create data subset for match data
 data_subset <- data[data$`Match Responses` == 'Yes',]
-```
-
-```{r}
-# Verify data
-head(data)
-```
-
-# Objective 1
-
-## Histrograms and boxplots
-
-```{r}
-# Histogram
-plot1 <- data %>% filter(Randomization == 1) %>%
-  ggplot(aes(`FPS-R score`)) +
-  geom_histogram() +
-  labs(title = "Group 1 Histogram")
-
-plot2 <- data %>% filter(Randomization == 2) %>%
-  ggplot(aes(`FPS-R score`)) +
-  geom_histogram() +
-  labs(title = "Group 2 Histogram")
 
 # Boxplot
 plot3 <- data %>% filter(Randomization == 1) %>%
   ggplot(aes(`FPS-R score`)) +
   geom_boxplot() +
-  labs(title = "Full Data Group 1 Boxplot")
+  labs(title = "Full Data Control Group Boxplot")
 
 plot4 <- data %>% filter(Randomization == 2) %>%
   ggplot(aes(`FPS-R score`)) +
   geom_boxplot() +
-  labs(title = "Full Data Group 2 Boxplot")
+  labs(title = "Full Data Study Group Boxplot")
 
 # Boxplot
+library(gridExtra)
 plot5 <- data %>% filter(Randomization == 1, `Match Responses` == "Yes") %>%
   ggplot(aes(`FPS-R score`)) +
   geom_boxplot() +
-  labs(title = "Match Subset Data Group 1 Boxplot")
+  labs(title = "Match Subset Control Group Boxplot")
 
 plot6 <- data %>% filter(Randomization == 2, `Match Responses` == "Yes") %>%
   ggplot(aes(`FPS-R score`)) +
   geom_boxplot() +
-  labs(title = "Match Subset Data Group 2 Boxplot")
+  labs(title = "Match Subset Study Group Boxplot")
 
-# Combine the plots
-cat("Group 1 = Control group\nGroup 2 = Study group")
-combined_plot <- (plot1 | plot2) / 
-                 (plot3 | plot4) / 
-                 (plot5 | plot6)
-print(combined_plot)
+grid.arrange(plot3, plot4, plot5, plot6, ncol = 2, nrow = 2)
 ```
 
-## Table
+Figure 2: Boxplots of Control and Study Group for Full and Subset Data
 
-```{r}
-# Create a table to count matches
-table <- table(data$`Observer Number`, data$`FPS-R Number`)
+From Figure 2, we observe that the median FPS-R score for both the control and treatment groups is 2. The treatment group's data shows a higher concentration of scores at FPS-R 0 and 2, and is right-skewed. When examining the boxplot of the subset of data where the FPS-R scores and observer's scores align, their distributions do not appear significantly different. 
 
-# Name the rows and columns to reflect the desired format
-rownames(table) <- c("1", "2", "3")
-colnames(table) <- c("1", "2", "3")
+The statistical method used to assess whether the addition of vapocoolant spray reduces discomfort is the Welch Two Sample T-Test. This test is applied under the assumption that the differences between the control group and the study group follow a Normal distribution, as per the Central Limit Theorem (CLT). We conduct the t-test twice: first on the entire dataset, and second on the subset of data where the FPS-R scores and observer’s scores match. The null hypothesis is that the mean pain level is the same for both treatment groups, while the alternative hypothesis is that the mean pain level is lower for the treatment group using the vapocoolant spray compared to the group using Ametop alone. Thus, the test is a one-sided t-test. In accordance with Dr. Louis Scheepers' recommendation, the threshold for p-value significance is set at a 5% significance level.
 
-# Output the 3x3 table
-cat("Contingency Table of FPS-R Number vs. Observer Number\n")
-cat("Rows: FPS-R Number\n")
-cat("Columns: Observer Number\n\n")
-print(table)
-```
+**Secondary Objective 1: Do age, gender, the practitioner’s role, the number of IV attempts, and the needle gauge used to influence the level of pain experienced by pediatric patients during IV insertion?**
 
-## T-tests
+To examine the objective at hand, we constructed two models on the matched subset data for consistency with the first objective. The first model included only the listed five main effects, serving as the base model while the second model introduced interaction effects. The null hypothesis posited that there is no relationship between the dependent variables and the FPS-R Score, while the alternative hypothesis suggested the presence of such a relationship.
 
-```{r}
-# Perform t-test on full data
-t_test_full <- t.test(data[data$Randomization == 2, ]$`FPS-R score`,
-                      data[data$Randomization == 1, ]$`FPS-R score`,
-                      alternative = c("less"))
-print(t_test_full)
+Firstly, we conducted linear regression solely on the main effects, adhering to a 5% significance level. Secondly, we investigated how the relationship between one categorical factor and the FPS-R score depends on the value of the second categorical factor. We grouped the age variable into two groups, 5-10 and 11-16 to consider children’s development. Additionally, we categorized the number of IV attempts into low and high. Then, we paired all five main effects and generated interaction plots. If the lines intersect, indicating an interaction between the selected two variables, we included the interaction term in the regression model. Once all terms, including the interaction effects, were incorporated, we performed linear regression again.
 
-# Perform t-test on subset of data
-t_test_subset <- t.test(data_subset[data_subset$Randomization == 2, ]$`FPS-R score`,
-                        data_subset[data_subset$Randomization == 1, ]$`FPS-R score`, 
-                        alternative = c("less"))
-print(t_test_subset)
+**Secondary Objective 2: The incidence of side effects due to Ametop or the vapocoolant spray.**
+	
+**Study Design and Participants:**
+All participants initially included in the study were considered in the analysis, even those who withdrew before its conclusion, to consider patients who withdrew due to experiencing side effects and preserving the comprehensive nature of the data. Thus, all 240 participants of the study are included in this objective’s analysis.
 
-# Conclusion: We should only reject the null hypothesis based on the full dataset.
-# If we consider the subset of data with 164 observations (after excluding 59
-# from the original 223), we do not reject the null hypothesis.
-```
+**Side Effects Categorization:**
+Categories of observed side effects were extracted from the ‘Observed side effects’ column, where side effects of patients ranged from “Slight redness of skin from Ametop” to “quite red & itchy skin from Ametop. Underlying eczema.” These reports were categorized into distinct groups such as the individual side effect “Redness” and the combined side effect “Redness + Itching” to facilitate the quantitative analysis of side effects. 
 
-# Objective 2
+# Result
 
-## Interaction plots
+**Main Objective: Does the combination of Ametop with a vapocoolant spray significantly reduce the discomfort experienced by pediatric patients during IV insertions, compared to the application of Ametop alone?**
 
-```{r}
-# Only use match subset data
+Using the entire dataset, the result of the Welch Two Sample T-Test yields a p-value of 0.02258. This suggests that we can reject the null hypothesis at a 5% significance level, indicating that the mean pain level is not the same for both the control and study groups. This supports the idea that the addition of vapocoolant spray may reduce discomfort in pediatric patients.
 
-# Convert continuous variables to categorical factors
-data_subset$Age_Group <- cut(data_subset$Age, 
-                             breaks = 2, labels = c("5-10", "11-16")) 
-data_subset$IV_Attempts_Group <- cut(data_subset$`Number of IV attempts`, 
-                                     breaks = 2, labels = c("Low", "High"))
+However, when conducting the t-test on the subset of data where the FPS-R scores and observer's scores align, we obtain a p-value of 0.0594. This suggests that we cannot reject the null hypothesis at a 5% significance level, indicating that the mean pain level is the same for both the control and study groups, and we cannot conclude that the vapocoolant spray reduces discomfort.
 
-# Make sure all categorical variables are treated as factors
-data_subset$`Needle gauge` <- as.factor(data_subset$`Needle gauge`)
-data_subset$Sex <- as.factor(data_subset$Sex)
-data_subset$Practitioner <- as.factor(data_subset$Practitioner)
+**Secondary Objective 1: Do age, gender, the practitioner’s role, the number of IV attempts, and the needle gauge used to influence the level of pain experienced by pediatric patients during IV insertion?**
 
-# List of categorical variables
-categorical_vars <- c("Sex", "Age_Group", "IV_Attempts_Group", "Needle gauge", "Practitioner")
+**Base Model:**
 
-# Create interaction plots for all pairs of categorical variables
-for (x_var in categorical_vars) {
-  for (trace_var in categorical_vars) {
-    if (x_var != trace_var) {  # Avoid plotting a variable against itself
-      interaction.plot(x.factor = data_subset[[x_var]],
-                       trace.factor = data_subset[[trace_var]],
-                       response = data_subset$`FPS-R score`,
-                       type = "b",
-                       pch = 19,
-                       xlab = x_var,
-                       ylab = "FPS-R Score",
-                       trace.label = trace_var,
-                       col = c("red", "blue"),
-                       lty = 1,
-                       legend = TRUE,
-                       main = paste("Interaction Plot:", x_var, "vs", trace_var))
-    }
-  }
-}
+**Age:** The coefficient for Age is -0.11476, which is statistically significant (p < 0.05). This implies that for each additional year of age, the FPS-R score decreases by approximately 0.115 points, suggesting that older children experience slightly less discomfort during IV insertions.
 
-# Significant interactions: Sex * Age + Sex * `Needle gauge` + Sex * Practitioner
-# + Age * `Needle gauge` + Age * Practitioner + `Number of IV attempts` * Practitioner
-```
+**Number of IV Attempts:** This coefficient is positive and significant (p < 0.05), indicating that an increased number of IV attempts is associated with a higher FPS-R score, suggesting greater discomfort with more attempts.
 
-## Histograms for FPS-R score
+Out of 5 main effects (age, gender, the practitioner’s role, the number of IV attempts, and the needle gauge) in the base model, only the above two are significant.
 
-```{r}
-# General function to create plots
-plot_data <- function(data, x_var, y_var = "FPS-R score", x_label = "", y_label = "FPS-R score") {
-  p <- data %>%
-    ggplot(aes(x = !!sym(x_var), y = !!sym(y_var))) +
-    geom_point(size = 2) +
-    scale_y_continuous(breaks = seq(0, 10, by = 1)) +
-    labs(x = x_label, y = y_label) +
-    ggtitle(paste("Distribution of", y_label, "by", x_label))
+**Interaction Model:**
 
-  print(p)
-}
-```
+There are several significant interactions gathered from the interaction plot: Sex and Age, Sex and Needle gauge, Sex and Practitioner, Age and Needle gauge, Age and Practitioner, Number of IV attempts and Practitioner. All these interactions and the five main effects are included in this more comprehensive regression model. (Interaction plots attached in appendix)
 
-```{r}
-# Plot for Age
-plot_data(data, "Age", x_label = "Age")
+**Age and Practitioner Interaction:** The interaction between age and practitioner type is also significant (p < 0.05) with a negative coefficient (-0.412774). This indicates that the effect of a resident performing the procedure has a differential impact based on the patient's age. Specifically, the increase in discomfort associated with a resident performing the IV insertion diminishes as the patient gets older.
 
-# Plot for Sex
-plot_data(data, "Sex", x_label = "Sex")
+**Practitioner:** There was a significant positive coefficient for practitioners with resident status (p < 0.05), suggesting that when residents instead of anesthetists performed the IV insertion, there was an increase in the FPS-R score, which could be interpreted as an increase in perceived discomfort.
 
-# Plot for Practitioner
-plot_data(data, "Practitioner", x_label = "Practitioner")
+These results suggest that the discomfort during IV insertions is influenced not just by the number of attempts or the age of the patient but also by the experience level of the practitioner, and this effect varies with the age of the patient. It highlights the importance of considering these interactions when planning and training for IV insertions to optimize patient comfort.
 
-# Plot for Number of IV attempts
-plot_data(data, "Number of IV attempts", x_label = "Number of IV attempts")
+**Secondary Objective 2: The incidence of side effects due to Ametop or the vapocoolant spray.**
 
-# Plot for Needle gauge
-plot_data(data, "Needle gauge", x_label = "Needle gauge")
-
-# The younger the age, the more concentrated the distribution of pain scores.
-# The fewer the number of IV injections, the more concentrated the high pain scores are.
-```
-
-## Linear models for FPS-R score
-
-```{r}
-data_subset <- data[data$`Match Responses` == 'Yes',]
-
-lm_model_without_interactions <- lm(`FPS-R score` ~ Age + Sex + Practitioner +
-                 `Number of IV attempts` + `Needle gauge`, data = data_subset)
-summary(lm_model_without_interactions)
-
-lm_model_with_interactions <- lm(`FPS-R score` ~ Age + Sex + Practitioner + `Number of IV attempts`
-                + `Needle gauge` + Sex * Age + Sex * `Needle gauge` + Sex * Practitioner
-                + Age * `Needle gauge` + Age * Practitioner + `Number of IV attempts` * Practitioner, 
-                data = data_subset)
-summary(lm_model_with_interactions)
-```
-
-## Print linear model without interactions
-
-```{r}
-plot(lm_model_without_interactions)
-```
-
-## Print linear model with interactions
-
-```{r}
-plot(lm_model_with_interactions)
-```
-
-# Objective 3
-
+**Overall Tolerance**
 ```{r}
 # Pie chart draw function with percentages
 draw_pie_chart <- function(all_categories, title) {
@@ -310,23 +216,26 @@ draw_pie_chart <- function(all_categories, title) {
       main = title,
       col = rainbow(length(category_counts)),
       labels = labels,
-      cex = 0.8)
+      cex = 0.6)
 }
 ```
 
-## Pie chart for Observed side effects (No / Yes - Ametop alone / Yes - Ametop + vapocoolant spray)
-
-```{r}
+```{r, fig.align='center'}
 # Summarize "Any side effects observed?" column
 side_effects_observed_summary <- data.frame(
   ifelse(original_data$`Any side effects observed?` == "No", "No Side Effect",
          ifelse(original_data$Randomization == 1, "Side Effect (Ametop alone)",
-                "Side Effect (Ametop + vapocoolant spray)"))
+                "Side Effect (Ametop + spray)"))
 )
 
 # Create a pie chart for the observed side effects
 draw_pie_chart(side_effects_observed_summary, "Observed Side Effects")
 ```
+Figure 3: Observed Side Effects 
+
+As illustrated in Figure 3, the vast majority of the study participants, 95%, reported no side effects, indicating a high level of tolerance for both treatments. Within the 5% of patients experiencing side effects, only 2.1% were attributed to the use of Ametop alone, whereas the incidence of side effects from the combination treatment was higher, at 2.9%.
+
+**Side Effects in Ametop Alone Group**
 
 ```{r}
 # Define the categorization function
@@ -403,9 +312,531 @@ draw_pie_chart_individual <- function(side_effects_data, title) {
 }
 ```
 
-## Pie chart for observed side effects of Ametop alone (Redness, Itching, Pain, Puffiness)
+```{r, fig.align='center'}
+# Get the side effects data for the control group
+side_effects_data_control_group <- categorize_and_print(1)
 
+# Pie Chart for combined categories
+draw_pie_chart_combined(side_effects_data_control_group,
+                        "Combination Side Effects Distribution - Ametop alone")
+```
+
+Figure 4: Combination Side Effects Distribution - Ametop Alone
+
+```{r, fig.align='center'}
+# Pie Chart for individual categories
+draw_pie_chart_individual(side_effects_data_control_group,
+                          "Individual Side Effects Distribution - Ametop alone")
+```
+
+Figure 5: Individual Side Effects Distribution - Ametop Alone
+
+Figure 4 and Figure 5 present the distribution of side effects among patients treated with Ametop alone. Figure 4 shows that among those who reported side effects, 60% experienced redness only, while 40% experienced both redness and itching. No other combinations of side effects were reported. This suggests a tendency for side effects to present as redness alone or in conjunction with itching. Figure 5 further highlights that redness is the more prevalent individual side effect, reported by 71.4% of patients experiencing side effects, while itching was reported by 28.6%.
+
+**Side Effects in Ametop with Vapocoolant Spray Group**
+
+```{r, fig.align='center'}
+# Get the side effects data for the study group
+side_effects_data_study_group <- categorize_and_print(2)
+
+# Pie Chart for combined categories
+draw_pie_chart_combined(side_effects_data_study_group,
+                        "Combination Side Effects Distribution - Ametop + Spray")
+```
+
+Figure 6: Combination Side Effects Distribution - Ametop + Spray
+
+```{r, fig.align='center'}
+# Pie Chart for individual categories
+draw_pie_chart_individual(side_effects_data_study_group,
+                          "Individual Side Effects Distribution - Ametop + Spray")
+```
+
+Figure 7: Individual Side Effects Distribution - Ametop + Spray
+
+For patients treated with both Ametop and a vapocoolant spray, Figure 6 and Figure 7 depict the side effects. Figure 6 reveals a varied response, with redness alone constituting 57.1% of side effects, and pain, puffiness, and redness with itching each accounting for 14.3%. Figure 7 indicates that redness remains the most reported individual side effect at 62.5%, with itching, pain, and puffiness equally reported at 12.5% each.
+
+# Conclusion
+
+The conclusion of our main objective, which is to determine whether the addition of vapocoolant spray significantly reduces discomfort experienced by pediatric patients during IV insertions compared to Ametop alone, depends on the dataset used. When analyzing the full dataset, the results suggest that the addition of vapocoolant spray does significantly reduce discomfort. However, when examining the subset of data where the FPS-R scores and observer's scores align, there appears to be no significant difference in discomfort between the control and study groups. We favor the results from the subset data as it indicates more reliable and higher-quality data. Nonetheless, we acknowledge limitations in how the data is subsetted and plan to discuss with the client in our second meeting potential alternative methods for subsetting the data to improve results without introducing bias or removing too many observations.
+
+Regarding our secondary objective, which is to identify other variables that influence the level of pain experienced by pediatric patients during IV insertion, we conclude that age, number of IV attempts, and practitioner's role are significant factors. It emphasizes the significance of taking these factors into account during IV insertions to alleviate patients' discomfort. A limitation observed in this regression method is that the data does not appear to be exactly normally distributed, as indicated by the QQ plot, which shows a heavy-tailed distribution. However, since the group is focusing on inference rather than prediction, and considering the Central Limit Theorem (CLT) assumption, we will still proceed with using linear regression for our analysis.
+
+The inability to reject the null hypothesis in our main objective could be explained by the significant variables found in the regression model. Age, practitioner roles, and number of IV attempts have been identified as significant in influencing pain levels. Segmenting the data differently, perhaps by excluding certain age groups, number of IV attempts, or practitioner roles, might yield different results. Our next step is to retest the main objective, assessing whether there is a difference in the FPS-R scores between the control and study groups when segmented by age, practitioner role, and number of IV attempts, to see if this impacts the results in any way.
+
+In analyzing the side effects of Ametop and its combination with a vapocoolant spray, it's evident that the majority of patients (95%) experience no side effects, underlining the treatments’ high tolerance. Among the 5% that do report side effects, the occurrences are mild, such as redness or itchiness. For those treated with Ametop alone, side effects were predominantly redness, either alone or accompanied by itching, which is valuable information for healthcare providers assessing the drug’s tolerability. On the other hand, the combination treatment group presented a more varied range of side effects, with equal instances of itching, pain, and puffiness, in addition to redness. However, we were not sure whether the side effect was a result of the Ametop or the spray for the treatment group. Overall, the observed variations in side effect profiles highlight the significance of personalized patient care and the broad range of reactions suggests that clinicians must exercise careful consideration when prescribing treatments.
+
+\newpage
+
+# References
+Rogers TL, Ostrow CL. The use of EMLA cream to decrease venipuncture pain in children. Journal of Pediatric Nursing. 2004 Feb 1;19(1):33-9.
+
+\newpage
+
+# Appendix
+
+## For client
+- Interaction plots
+```{r, out.width="20%"}
+# Only use match subset data
+
+# Convert continuous variables to categorical factors
+data_subset$Age_Group <- cut(data_subset$Age, 
+                             breaks = 2, labels = c("5-10", "11-16")) 
+data_subset$IV_Attempts_Group <- cut(data_subset$`Number of IV attempts`, 
+                                     breaks = 2, labels = c("Low", "High"))
+
+# Make sure all categorical variables are treated as factors
+data_subset$`Needle gauge` <- as.factor(data_subset$`Needle gauge`)
+data_subset$Sex <- as.factor(data_subset$Sex)
+data_subset$Practitioner <- as.factor(data_subset$Practitioner)
+
+# List of categorical variables
+categorical_vars <- c("Sex", "Age_Group", "IV_Attempts_Group", "Needle gauge", "Practitioner")
+print(paste0("Categorical variables: ", paste(categorical_vars, collapse = ", ")))
+
+# Create interaction plots for all pairs of categorical variables
+for (x_var in categorical_vars) {
+  for (trace_var in categorical_vars) {
+    if (x_var != trace_var) {  # Avoid plotting a variable against itself
+      interaction.plot(x.factor = data_subset[[x_var]],
+                       trace.factor = data_subset[[trace_var]],
+                       response = data_subset$`FPS-R score`,
+                       type = "b",
+                       pch = 19,
+                       xlab = x_var,
+                       ylab = "FPS-R Score",
+                       trace.label = trace_var,
+                       col = c("red", "blue"),
+                       lty = 1,
+                       legend = TRUE,
+                       main = paste("Interaction Plot:", x_var, "vs", trace_var))
+    }
+  }
+}
+
+# Significant interactions: Sex * Age + Sex * `Needle gauge` + Sex * Practitioner
+# + Age * `Needle gauge` + Age * Practitioner + `Number of IV attempts` * Practitioner
+```
+
+- Linear regression output and QQ plot
 ```{r}
+data_subset <- data[data$`Match Responses` == 'Yes',]
+
+lm_model_without_interactions <- lm(`FPS-R score` ~ Age + Sex + Practitioner +
+                 `Number of IV attempts` + `Needle gauge`, data = data_subset)
+summary(lm_model_without_interactions)
+
+lm_model_with_interactions <- lm(`FPS-R score` ~ Age + Sex + Practitioner + `Number of IV attempts`
+                + `Needle gauge` + Sex * Age + Sex * `Needle gauge` + Sex * Practitioner
+                + Age * `Needle gauge` + Age * Practitioner + `Number of IV attempts` * Practitioner, 
+                data = data_subset)
+summary(lm_model_with_interactions)
+```
+
+#### Print linear model without interactions
+
+```{r, fig.align='center'}
+plot(lm_model_without_interactions)
+```
+
+#### Print linear model with interactions
+
+```{r, fig.align='center'}
+plot(lm_model_with_interactions)
+```
+
+\newpage
+
+## For mentor
+
+### Data cleaning
+
+```{r, echo=TRUE}
+# Read data
+file_path <- "../data/Ametop-PE data(new-Alex)(1control 2study).xlsx"
+original_data <- read_excel(file_path)
+
+# Save original data for side effects analysis
+data <- original_data
+
+# Remove withdrawn patients
+data <- data[data$`Withdrawn after consent?` != "Yes", ]
+
+# Remove unnecessary variables
+data <- select(data, 
+               -`Elective surgery requiring IV?`,
+               -`ASA I or II?`,
+               -`Aged 5-16?`,
+               -`Any allergies to Ametop, Pain Ease, or Tagederm adhesive?`,
+               -`Ametop placed at least 30min before estimated IV start time?`,
+               -`Receiving sedative pre-medication / anxiolytics?`,
+               -`Needle phobia?`,
+               -`Planned inhalation induction?`,
+               -`Developmental delay or unable to interpret FPS-R?`,
+               -`Time Ametop applied`,
+               -`Time Ametop removed`,
+               -`Time of skin puncture`,
+               -`Record ID`,
+               -`Complete?`,
+               -`Withdrawn after consent?`,
+               -`Reason for withdrawal`,
+               -`Other reason for withdrawal`)
+```
+
+```{r, echo=TRUE}
+# Check for missing values in all columns except 'Notes' and 'Observed side effects'
+missing_values_summary <- data %>%
+  select(-Notes, -`Observed side effects`) %>%
+  summarise_all(~sum(is.na(.)))
+
+# No missing values found
+print(missing_values_summary)
+```
+
+```{r, echo=TRUE}
+# Shorten the data
+data$`Reaction to skin puncture` <- gsub("^(Slight|Severe).*", "\\1 Pain",
+                                         data$`Reaction to skin puncture`)
+
+# Verify the changes
+table(data$`Reaction to skin puncture`)
+```
+
+### Data preprocessing
+
+```{r, echo=TRUE}
+# Create new variables for the dataset
+
+# Create 'Observer Number'
+data$`Observer Number` <- case_when(
+  data$`Reaction to skin puncture` == "None" ~ 1,
+  data$`Reaction to skin puncture` == "Slight Pain" ~ 2,
+  data$`Reaction to skin puncture` == "Severe Pain" ~ 3
+)
+
+# Create 'FPS-R Number'
+data$`FPS-R Number` <- case_when(
+  data$`FPS-R score` %in% c(0, 2) ~ 1,
+  data$`FPS-R score` %in% c(4, 6) ~ 2,
+  data$`FPS-R score` %in% c(8, 10) ~ 3
+)
+
+# Create 'Match Responses'
+data$`Match Responses` <- ifelse(data$`Observer Number` == data$`FPS-R Number`, "Yes", "No")
+
+# Create data subset for match data
+data_subset <- data[data$`Match Responses` == 'Yes',]
+```
+
+```{r, echo=TRUE}
+# Verify data
+head(data)
+```
+
+### Objective 1
+
+#### Histrograms and boxplots
+
+```{r, echo=TRUE, fig.align='center'}
+# Histogram
+plot1 <- data %>% filter(Randomization == 1) %>%
+  ggplot(aes(`FPS-R score`)) +
+  geom_histogram() +
+  labs(title = "Group 1 Histogram")
+
+plot2 <- data %>% filter(Randomization == 2) %>%
+  ggplot(aes(`FPS-R score`)) +
+  geom_histogram() +
+  labs(title = "Group 2 Histogram")
+
+# Boxplot
+plot3 <- data %>% filter(Randomization == 1) %>%
+  ggplot(aes(`FPS-R score`)) +
+  geom_boxplot() +
+  labs(title = "Full Data Group 1 Boxplot")
+
+plot4 <- data %>% filter(Randomization == 2) %>%
+  ggplot(aes(`FPS-R score`)) +
+  geom_boxplot() +
+  labs(title = "Full Data Group 2 Boxplot")
+
+# Boxplot
+plot5 <- data %>% filter(Randomization == 1, `Match Responses` == "Yes") %>%
+  ggplot(aes(`FPS-R score`)) +
+  geom_boxplot() +
+  labs(title = "Match Subset Data Group 1 Boxplot")
+
+plot6 <- data %>% filter(Randomization == 2, `Match Responses` == "Yes") %>%
+  ggplot(aes(`FPS-R score`)) +
+  geom_boxplot() +
+  labs(title = "Match Subset Data Group 2 Boxplot")
+
+grid.arrange(plot1,plot2,plot3,plot4,plot5,plot6, ncol = 2, nrow = 3)
+```
+
+#### Table
+
+```{r, echo=TRUE}
+# Create a table to count matches
+table <- table(data$`Observer Number`, data$`FPS-R Number`)
+
+# Name the rows and columns to reflect the desired format
+rownames(table) <- c("1", "2", "3")
+colnames(table) <- c("1", "2", "3")
+
+# Output the 3x3 table
+cat("Contingency Table of FPS-R Number vs. Observer Number\n")
+cat("Rows: FPS-R Number\n")
+cat("Columns: Observer Number\n\n")
+print(table)
+```
+
+#### T-tests
+
+```{r, echo=TRUE}
+# Perform t-test on full data
+t_test_full <- t.test(data[data$Randomization == 2, ]$`FPS-R score`,
+                      data[data$Randomization == 1, ]$`FPS-R score`,
+                      alternative = c("less"))
+print(t_test_full)
+
+# Perform t-test on subset of data
+t_test_subset <- t.test(data_subset[data_subset$Randomization == 2, ]$`FPS-R score`,
+                        data_subset[data_subset$Randomization == 1, ]$`FPS-R score`, 
+                        alternative = c("less"))
+print(t_test_subset)
+
+# Conclusion: We should only reject the null hypothesis based on the full dataset.
+# If we consider the subset of data with 164 observations (after excluding 59
+# from the original 223), we do not reject the null hypothesis.
+```
+
+### Objective 2
+
+#### Interaction plots
+
+```{r, echo=TRUE, out.width="20%"}
+# Only use match subset data
+
+# Convert continuous variables to categorical factors
+data_subset$Age_Group <- cut(data_subset$Age, 
+                             breaks = 2, labels = c("5-10", "11-16")) 
+data_subset$IV_Attempts_Group <- cut(data_subset$`Number of IV attempts`, 
+                                     breaks = 2, labels = c("Low", "High"))
+
+# Make sure all categorical variables are treated as factors
+data_subset$`Needle gauge` <- as.factor(data_subset$`Needle gauge`)
+data_subset$Sex <- as.factor(data_subset$Sex)
+data_subset$Practitioner <- as.factor(data_subset$Practitioner)
+
+# List of categorical variables
+categorical_vars <- c("Sex", "Age_Group", "IV_Attempts_Group", "Needle gauge", "Practitioner")
+print(paste0("Categorical variables: ", paste(categorical_vars, collapse = ", ")))
+
+# Create interaction plots for all pairs of categorical variables
+for (x_var in categorical_vars) {
+  for (trace_var in categorical_vars) {
+    if (x_var != trace_var) {  # Avoid plotting a variable against itself
+      interaction.plot(x.factor = data_subset[[x_var]],
+                       trace.factor = data_subset[[trace_var]],
+                       response = data_subset$`FPS-R score`,
+                       type = "b",
+                       pch = 19,
+                       xlab = x_var,
+                       ylab = "FPS-R Score",
+                       trace.label = trace_var,
+                       col = c("red", "blue"),
+                       lty = 1,
+                       legend = TRUE,
+                       main = paste("Interaction Plot:", x_var, "vs", trace_var))
+    }
+  }
+}
+
+# Significant interactions: Sex * Age + Sex * `Needle gauge` + Sex * Practitioner
+# + Age * `Needle gauge` + Age * Practitioner + `Number of IV attempts` * Practitioner
+```
+
+#### Histograms for FPS-R score
+
+```{r, echo=TRUE}
+# General function to create plots
+plot_data <- function(data, x_var, y_var = "FPS-R score", x_label = "", y_label = "FPS-R score") {
+  p <- data %>%
+    ggplot(aes(x = !!sym(x_var), y = !!sym(y_var))) +
+    geom_point(size = 2) +
+    scale_y_continuous(breaks = seq(0, 10, by = 1)) +
+    labs(x = x_label, y = y_label) +
+    ggtitle(paste("Distribution of", y_label, "by", x_label))
+
+  print(p)
+}
+```
+
+```{r, echo=TRUE, out.width="75%", fig.align='center'}
+# Plot for Age
+plot_data(data, "Age", x_label = "Age")
+
+# Plot for Sex
+plot_data(data, "Sex", x_label = "Sex")
+
+# Plot for Practitioner
+plot_data(data, "Practitioner", x_label = "Practitioner")
+
+# Plot for Number of IV attempts
+plot_data(data, "Number of IV attempts", x_label = "Number of IV attempts")
+
+# Plot for Needle gauge
+plot_data(data, "Needle gauge", x_label = "Needle gauge")
+
+# The younger the age, the more concentrated the distribution of pain scores.
+# The fewer the number of IV injections, the more concentrated the high pain scores are.
+```
+
+#### Linear models for FPS-R score
+
+```{r, echo=TRUE}
+data_subset <- data[data$`Match Responses` == 'Yes',]
+
+lm_model_without_interactions <- lm(`FPS-R score` ~ Age + Sex + Practitioner +
+                 `Number of IV attempts` + `Needle gauge`, data = data_subset)
+summary(lm_model_without_interactions)
+
+lm_model_with_interactions <- lm(`FPS-R score` ~ Age + Sex + Practitioner + `Number of IV attempts`
+                + `Needle gauge` + Sex * Age + Sex * `Needle gauge` + Sex * Practitioner
+                + Age * `Needle gauge` + Age * Practitioner + `Number of IV attempts` * Practitioner, 
+                data = data_subset)
+summary(lm_model_with_interactions)
+```
+
+#### Print linear model without interactions
+
+```{r, echo=TRUE, fig.align='center'}
+plot(lm_model_without_interactions)
+```
+
+#### Print linear model with interactions
+
+```{r, echo=TRUE, fig.align='center'}
+plot(lm_model_with_interactions)
+```
+
+### Objective 3
+
+```{r, echo=TRUE}
+# Pie chart draw function with percentages
+draw_pie_chart <- function(all_categories, title) {
+  # Count the occurrences of each category
+  category_counts <- table(all_categories)
+
+  # Calculate the percentage for each category
+  percentages <- round(category_counts / sum(category_counts) * 100, 1)
+
+  # Create labels that include both the category name and the percentage
+  labels <- paste(names(category_counts), " - ", percentages, "%", sep="")
+
+  # Create a pie chart with percentages
+  pie(category_counts,
+      main = title,
+      col = rainbow(length(category_counts)),
+      labels = labels,
+      cex = 0.6)
+}
+```
+
+#### Pie chart for Observed side effects (No / Yes - Ametop alone / Yes - Ametop + spray)
+
+```{r, echo=TRUE, fig.align='center'}
+# Summarize "Any side effects observed?" column
+side_effects_observed_summary <- data.frame(
+  ifelse(original_data$`Any side effects observed?` == "No", "No Side Effect",
+         ifelse(original_data$Randomization == 1, "Side Effect (Ametop alone)",
+                "Side Effect (Ametop + spray)"))
+)
+
+# Create a pie chart for the observed side effects
+draw_pie_chart(side_effects_observed_summary, "Observed Side Effects")
+```
+
+```{r, echo=TRUE}
+# Define the categorization function
+categorize_effects <- function(effect) {
+  effect_lower <- tolower(effect)
+  categories <- list(
+    Redness = "red|redness|pink",
+    Itching = "itchy|pruritic|pruritis",
+    Pain = "pain|painful",
+    Puffiness = "puffy"
+  )
+
+  identified_categories <- character(0)
+
+  # Negation patterns
+  pattern_start <- "\\b(no|not)\\s+("
+  pattern_middle <- ")\\b|(no|not)\\s+\\w+\\s+or\\s+("
+  pattern_end <- ")"
+
+  for (category_name in names(categories)) {
+    symptom_pattern <- categories[[category_name]]
+
+    # Check for the symptom but exclude if negated
+    if (grepl(symptom_pattern, effect_lower)) {
+      negation_pattern <- paste0(
+        pattern_start, symptom_pattern, pattern_middle, symptom_pattern, pattern_end)
+      if (!grepl(negation_pattern, effect_lower)) {
+        identified_categories <- c(identified_categories, category_name)
+      }
+    }
+  }
+
+  # Return "Other" if no category is found
+  if (length(identified_categories) == 0) {
+    return("Other")
+  }
+
+  return(identified_categories)
+}
+```
+
+```{r, echo=TRUE}
+# Create and print a list of categories for each side effect
+categorize_and_print <- function(group_number) {
+  side_effects_data <- data.frame(SideEffects = na.omit(original_data[
+    original_data$Randomization == group_number,]$`Observed side effects`))
+  side_effects_data$Categories <- sapply(side_effects_data$SideEffects,
+                                          categorize_effects, USE.NAMES=FALSE)
+  print(data.frame(Description = side_effects_data$SideEffects,
+                   Categories = sapply(side_effects_data$Categories, paste, collapse = ", ")))
+  return(side_effects_data)
+}
+```
+
+```{r, echo=TRUE}
+# Pie chart draw function for combined categories
+draw_pie_chart_combined <- function(side_effects_data, title) {
+  # Combination Categories
+  all_categories <- sapply(side_effects_data$Categories, paste, collapse = " + ")
+
+  # Use the draw_pie_chart function to create the pie chart
+  draw_pie_chart(all_categories, title)
+}
+```
+
+```{r, echo=TRUE}
+# Pie chart draw function for individual categories
+draw_pie_chart_individual <- function(side_effects_data, title) {
+  # Flatten the list into a vector
+  all_categories <- unlist(side_effects_data$Categories)
+
+  # Use the draw_pie_chart function to create the pie chart
+  draw_pie_chart(all_categories, title)
+}
+```
+
+#### Pie chart for observed side effects of Ametop alone (Redness, Itching, Pain, Puffiness)
+
+```{r, echo=TRUE, fig.align='center'}
 # Get the side effects data for the control group
 side_effects_data_control_group <- categorize_and_print(1)
 
@@ -418,9 +849,9 @@ draw_pie_chart_individual(side_effects_data_control_group,
                           "Individual Side Effects Distribution - Ametop alone")
 ```
 
-## Pie chart for observed side effects of Ametop + Spray (Redness, Itching, Pain, Puffiness)
+#### Pie chart for observed side effects of Ametop + Spray (Redness, Itching, Pain, Puffiness)
 
-```{r}
+```{r, echo=TRUE, fig.align='center'}
 # Get the side effects data for the study group
 side_effects_data_study_group <- categorize_and_print(2)
 
