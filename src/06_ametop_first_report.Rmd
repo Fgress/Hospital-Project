@@ -266,7 +266,7 @@ categorize_effects <- function(effect) {
   effect_lower <- tolower(effect)
   categories <- list(
     Redness = "red|redness|pink",
-    Itching = "itchy|pruritic|pruritis",
+    Itching = "itchy|pruritic|pruritis|itching",
     Pain = "pain|painful",
     Puffiness = "puffy"
   )
@@ -344,7 +344,7 @@ skin_conditions <- data.frame(
                   "redness & raised area under ametop"),
   Categories = c("Redness",
                  "Redness, Itching",
-                 "Redness",
+                 "Redness, Itching",
                  "Redness, Itching",
                  "Redness")
 )
@@ -368,7 +368,7 @@ draw_pie_chart_individual(side_effects_data_control_group,
                           "Individual Side Effects Distribution - Ametop alone")
 ```
 
-Figure 3 and Figure 4 present the distribution of side effects among patients treated with Ametop alone. Figure 3 shows that among those who reported side effects, 60% experienced redness only, while 40% experienced both redness and itching. No other combinations of side effects were reported. This suggests a tendency for side effects to present as redness alone or in conjunction with itching. Figure 4 further highlights that redness is the more prevalent individual side effect, reported by 71.4% of patients experiencing side effects, while itching was reported by 28.6%.
+Figure 3 and Figure 4 present the distribution of side effects among patients treated with Ametop alone. Figure 3 shows that among those who reported side effects, 40% experienced redness only, while 60% experienced both redness and itching. No other combinations of side effects were reported. This suggests a tendency for side effects to present as redness alone or in conjunction with itching. Figure 4 further highlights that redness is the more prevalent individual side effect, reported by 62.5% of patients experiencing side effects, while itching was reported by 37.5%.
 
 **Side Effects in Ametop with Vapocoolant Spray Group**
 
@@ -822,7 +822,7 @@ categorize_effects <- function(effect) {
   effect_lower <- tolower(effect)
   categories <- list(
     Redness = "red|redness|pink",
-    Itching = "itchy|pruritic|pruritis",
+    Itching = "itchy|pruritic|pruritis|itching",
     Pain = "pain|painful",
     Puffiness = "puffy"
   )
