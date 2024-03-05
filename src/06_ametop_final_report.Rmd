@@ -667,6 +667,19 @@ plot(lm_model_without_interactions)
 plot(lm_model_with_interactions)
 ```
 
+#### Linear regression by two groups
+
+```{r, echo=TRUE}
+control <- subset(data_subset, Randomization == 1)
+study <- subset(data_subset, Randomization == 2)
+
+lm_model_c <- lm(`FPS-R score` ~ Age + `Number of IV attempts` + `Needle gauge`, data = control)
+lm_model_s <- lm(`FPS-R score` ~ Age + `Number of IV attempts` + `Needle gauge`, data = study)
+summary(lm_model_c)
+summary(lm_model_s)
+
+```
+
 ### Objective 3
 
 ```{r, echo=TRUE}
