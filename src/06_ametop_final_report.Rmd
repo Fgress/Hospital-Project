@@ -695,9 +695,16 @@ draw_pie_chart <- function(all_categories, title) {
   labels <- paste(names(category_counts), " - ", percentages, "%", sep="")
 
   # Create a pie chart with percentages
+  colors_hex <- c("#283618", "#bc6c25")
+  alpha_value <- 0.7
+  colors_with_alpha <- sapply(colors_hex, function(col) {
+  col_rgb <- col2rgb(col) / 255
+  rgb(col_rgb[1], col_rgb[2], col_rgb[3], alpha = alpha_value)}, USE.NAMES = FALSE)
+  colors_with_alpha <- rep(colors_with_alpha, length.out = length(category_counts))
+  
   pie(category_counts,
       main = title,
-      col = rep(c("green", "red"), length.out = length(category_counts)),
+      col = colors_with_alpha,
       labels = labels,
       cex = 1.0)
 }
