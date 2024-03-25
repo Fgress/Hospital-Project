@@ -220,7 +220,7 @@ These results suggest that the discomfort during IV insertions is influenced not
 
 **Secondary Objective 2: The incidence of side effects due to Ametop or the vapocoolant spray.**
 
-**Overall Tolerance**
+**Proportions of patients with or without observed side effects**
 
 ```{r}
 # Pie chart draw function with percentages
@@ -234,10 +234,9 @@ draw_pie_chart <- function(all_categories, title) {
   # Create labels that include both the category name and the percentage
   labels <- paste(names(category_counts), " - ", percentages, "%", sep="")
 
-  # Create a pie chart with percentages
   pie(category_counts,
       main = title,
-      col = rep(c("green", "red"), length.out = length(category_counts)),
+      col = c("#219ebc", "#fb8500"),
       labels = labels,
       cex = 1.0)
 }
@@ -253,7 +252,7 @@ draw_pie_chart(side_effects_observed_summary, "Observed Side Effects")
 
 As illustrated in Figure 2, the vast majority of study participants, 95%, reported no side effects, indicating a high level of tolerance for both treatments, with 5% of patients experiencing side effects.
 
-**Side Effects**
+**Side effects**
 
 ```{r, fig.align='center'}
 side_effects_data <- data.frame(
@@ -559,18 +558,10 @@ draw_pie_chart <- function(all_categories, title) {
 
   # Create labels that include both the category name and the percentage
   labels <- paste(names(category_counts), " - ", percentages, "%", sep="")
-
-  # Create a pie chart with percentages
-  colors_hex <- c("#283618", "#bc6c25")
-  alpha_value <- 0.7
-  colors_with_alpha <- sapply(colors_hex, function(col) {
-  col_rgb <- col2rgb(col) / 255
-  rgb(col_rgb[1], col_rgb[2], col_rgb[3], alpha = alpha_value)}, USE.NAMES = FALSE)
-  colors_with_alpha <- rep(colors_with_alpha, length.out = length(category_counts))
   
   pie(category_counts,
       main = title,
-      col = colors_with_alpha,
+      col = c("#219ebc", "#fb8500"),
       labels = labels,
       cex = 1.0)
 }
