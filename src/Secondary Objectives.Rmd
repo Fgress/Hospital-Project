@@ -1,0 +1,109 @@
+---
+title: "Second Objectives"
+output: html_document
+date: "2024-03-12"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library("readxl")
+library(tidyverse)
+library(broom)
+
+# Upload data
+data <- read_excel("../data/Ametop-PE data(new-Alex)(1control 2study).xlsx")
+
+# Remove withdrawn patients
+data <- data[data$`Withdrawn after consent?` != "Yes", ]
+
+# Remove unnecessary variables
+data <- select(data, 
+               -`Elective surgery requiring IV?`,
+               -`ASA I or II?`,
+               -`Aged 5-16?`,
+               -`Any allergies to Ametop, Pain Ease, or Tagederm adhesive?`,
+               -`Ametop placed at least 30min before estimated IV start time?`,
+               -`Receiving sedative pre-medication / anxiolytics?`,
+               -`Needle phobia?`,
+               -`Planned inhalation induction?`,
+               -`Developmental delay or unable to interpret FPS-R?`,
+               -`Time Ametop applied`,
+               -`Time Ametop removed`,
+               -`Time of skin puncture`,
+               -`Record ID`,
+               -`Complete?`,
+               -`Reason for withdrawal`,
+               -`Other reason for withdrawal`)
+
+# Check for missing values in all columns except 'Notes' and 'Observed side effects'
+missing_values_summary <- data %>%
+  select(-Notes, -`Observed side effects`) %>%
+  summarise_all(~sum(is.na(.)))
+
+# Shorten the data
+data$`Reaction to skin puncture` <- gsub("^Slight.*", "Slight Pain", data$`Reaction to skin puncture`)
+data$`Reaction to skin puncture` <- gsub("^Severe.*", "Severe Pain", data$`Reaction to skin puncture`)
+
+# Verify the changes
+table(data$`Reaction to skin puncture`)
+```
+```{r}
+# Secondary Objective 1: Linear regression of age*randomization group
+
+lm_age <- lm(`FPS-R score` ~ Age * factor(Randomization), data = data)
+summary(lm_age)
+```
+```{r}
+# Plot the linear regression line
+ggplot(data, aes(x = Age, y = `FPS-R score`, color = factor(Randomization))) +
+  # Add the regression line
+  geom_smooth(method = "lm", se = FALSE) +
+  # Set plot labels
+  xlab("Age") +
+  ylab("FPS-R score") +
+  labs(color = "Randomization", title = "Figure 2: Linear Regression line for Control and Study Group") +
+  scale_color_manual(values = c("#219ebc", "#fb8500"),
+                     labels = c("Control Group", "Study Group")) +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
+```
+
+```{r}
+# Number of IV Attempts analysis
+
+#Summary statistics
+data_control <- data[data$`Randomization` == 1,]
+data_study <- data[data$`Randomization` == 2,]
+summary(data_control$`Number of IV attempts`)
+summary(data_study$`Number of IV attempts`)
+
+# Mean for study group decreases instead
+
+#Bar Chart for IV attempts
+bar <- data %>%
+  mutate(Group = ifelse(Randomization == 1, "Control Group", "Study Group")) %>%
+  ggplot(aes(x = `Number of IV attempts`, fill = Group)) +
+  geom_bar(position = "dodge") +
+  scale_fill_manual(values = c("Control Group" = "#219ebc", "Study Group" = "#fb8500")) +
+  labs(title = "Number of IV Attempts", x = "Number of IV Attempts",
+    y = "Count", fill = "Group"
+  ) +
+    theme(
+    plot.title = element_text(hjust = 0.5, size = 20, face = "bold"),
+    legend.title = element_text(size = 16),
+    legend.text = element_text(size = 16),
+    axis.title.x = element_text(size = 16),
+    axis.title.y = element_text(size = 16),
+    axis.text.x = element_text(size = 12),
+    axis.text.y = element_text(size = 12)
+  )
+
+print(bar)
+
+# No need further testing, from EDA we can see that the study group 
+# didn't increase number of IV attempts (in fact, it decreases)
+# (note: we did try doing t-test for confirmation and we can't reject null)
+```
