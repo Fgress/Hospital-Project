@@ -75,7 +75,7 @@ In this analysis, we employ several statistical methods to address our research 
 
 We begin with exploratory data analysis to examine the distribution of the target response variable, the FPS-R score. Figure 1 displays comparative boxplots for the control and study groups, illustrating the distribution of these FPS-R scores.
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', fig.cap = "Boxplots of Control and Study Group for the Full Dataset"}
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.height=1.5, fig.align='center', fig.cap = "Boxplots of Control and Study Group for the Full Dataset"}
 # Read data
 file_path <- "../data/Ametop-PE data(new-Alex)(1control 2study).xlsx"
 original_data <- read_excel(file_path)
@@ -184,7 +184,7 @@ Although the estimates for the randomization group and the interaction between a
 
 From the estimates in Table 2, we create a linear regression model that represents the average FPS-R Scores among children according to their age and group allocation depicted in Figure 2.
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', fig.cap='Linear Regression Model for Control and Study Group'}
+```{r, echo=FALSE, message=FALSE, warning=FALSE, out.width="75%", fig.align='center', fig.cap='Linear Regression Model for Control and Study Group'}
 # Plot the linear regression line
 ggplot(data, aes(x = Age, y = `FPS-R score`, color = factor(Randomization))) +
   # Add the regression line
@@ -204,7 +204,7 @@ Examining Figure 2, it is observed that As age increases, the difference of decr
 
 The figure below represents the number of IV insertion attempts in the control group compared to the study group with vapocoolant spray. 
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', fig.cap = "Number of IV Attempts for Control and Study Group"}
+```{r, echo=FALSE, message=FALSE, warning=FALSE, out.width="75%", fig.align='center', fig.cap = "Number of IV Attempts for Control and Study Group"}
 # Bar Chart for IV attempts
 bar <- data %>%
   mutate(Group = ifelse(Randomization == 1, "Control Group", "Study Group")) %>%
@@ -231,7 +231,7 @@ In summary, through the analysis of simple summary plots and calculation of mean
 
 First, we want to know the proportions of patients experiencing side effects. Our findings indicate that there are 12 out of 240 patients from the dataset that experience side effects. This finding is shown in Figure 4 pie chart.
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.height=3.9, fig.align='center', fig.cap = "Proportion of Observed Side Effects"}
 # Pie chart draw function with percentages
 draw_pie_chart <- function(all_categories, title) {
   # Count the occurrences of each category
@@ -249,9 +249,7 @@ draw_pie_chart <- function(all_categories, title) {
       labels = labels,
       cex = 1.0)
 }
-```
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', fig.cap = "Proportion of Observed Side Effects"}
 # Summarize "Any side effects observed?" column
 side_effects_observed_summary <- data.frame(original_data$`Any side effects observed?`)
 
@@ -528,7 +526,9 @@ print(bar)
 
 ### Secondary Objective 3: Side Effects
 
-```{r, echo=TRUE}
+#### Pie chart for Observed side effects
+
+```{r, echo=TRUE, fig.align='center'}
 # Pie chart draw function with percentages
 draw_pie_chart <- function(all_categories, title) {
   # Count the occurrences of each category
@@ -546,11 +546,7 @@ draw_pie_chart <- function(all_categories, title) {
       labels = labels,
       cex = 1.0)
 }
-```
 
-#### Pie chart for Observed side effects
-
-```{r, echo=TRUE, fig.align='center'}
 # Summarize "Any side effects observed?" column
 side_effects_observed_summary <- data.frame(original_data$`Any side effects observed?`)
 
