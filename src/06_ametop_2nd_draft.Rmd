@@ -489,12 +489,14 @@ print(t_test_subset)
 
 ### Objective 2
 
-```{r}
+#### Linear regression of Age * Randomization group
+
+```{r, echo=TRUE, fig.align='center'}
 lm_age <- lm(`FPS-R score` ~ Age * factor(Randomization), data = data)
 summary(lm_age)
 ```
 
-```{r}
+```{r, echo=TRUE, fig.align='center'}
 # Plot the linear regression line
 ggplot(data, aes(x = Age, y = `FPS-R score`, color = factor(Randomization))) +
   # Add the regression line
@@ -508,7 +510,7 @@ ggplot(data, aes(x = Age, y = `FPS-R score`, color = factor(Randomization))) +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 ```
 
-```{r}
+```{r, echo=TRUE, fig.align='center'}
 # Number of IV Attempts analysis
 
 # Summary statistics
