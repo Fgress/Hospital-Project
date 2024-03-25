@@ -1,7 +1,7 @@
 ---
-title: "First Draft Report: Group 6 Ametop Study with Dr. Louis Scheepers"
+title: "Second Draft Report: Group 6 Ametop Study with Dr. Louis Scheepers"
 output: pdf_document
-date: "21 February 2024"
+date: "25 March 2024"
 header-includes:
    - \usepackage{multirow}
    - \usepackage{float}
@@ -322,75 +322,6 @@ Rogers TL, Ostrow CL. The use of EMLA cream to decrease venipuncture pain in chi
 # Appendix
 
 ## For client
-- Interaction plots
-```{r, out.width="20%"}
-# Only use match subset data
-
-# Convert continuous variables to categorical factors
-data_subset$Age_Group <- cut(data_subset$Age, 
-                             breaks = 2, labels = c("5-10", "11-16")) 
-data_subset$IV_Attempts_Group <- cut(data_subset$`Number of IV attempts`, 
-                                     breaks = 2, labels = c("Low", "High"))
-
-# Make sure all categorical variables are treated as factors
-data_subset$`Needle gauge` <- as.factor(data_subset$`Needle gauge`)
-data_subset$Sex <- as.factor(data_subset$Sex)
-data_subset$Practitioner <- as.factor(data_subset$Practitioner)
-
-# List of categorical variables
-categorical_vars <- c("Sex", "Age_Group", "IV_Attempts_Group", "Needle gauge", "Practitioner")
-print(paste0("Categorical variables: ", paste(categorical_vars, collapse = ", ")))
-
-# Create interaction plots for all pairs of categorical variables
-for (x_var in categorical_vars) {
-  for (trace_var in categorical_vars) {
-    if (x_var != trace_var) {  # Avoid plotting a variable against itself
-      interaction.plot(x.factor = data_subset[[x_var]],
-                       trace.factor = data_subset[[trace_var]],
-                       response = data_subset$`FPS-R score`,
-                       type = "b",
-                       pch = 19,
-                       xlab = x_var,
-                       ylab = "FPS-R Score",
-                       trace.label = trace_var,
-                       col = c("red", "blue"),
-                       lty = 1,
-                       legend = TRUE,
-                       main = paste("Interaction Plot:", x_var, "vs", trace_var))
-    }
-  }
-}
-
-# Significant interactions: Sex * Age + Sex * `Needle gauge` + Sex * Practitioner
-# + Age * `Needle gauge` + Age * Practitioner + `Number of IV attempts` * Practitioner
-```
-
-- Linear regression output and QQ plot
-```{r}
-data_subset <- data[data$`Match Responses` == 'Yes',]
-
-lm_model_without_interactions <- lm(`FPS-R score` ~ Age + Sex + Practitioner +
-                 `Number of IV attempts` + `Needle gauge`, data = data_subset)
-summary(lm_model_without_interactions)
-
-lm_model_with_interactions <- lm(`FPS-R score` ~ Age + Sex + Practitioner + `Number of IV attempts`
-                + `Needle gauge` + Sex * Age + Sex * `Needle gauge` + Sex * Practitioner
-                + Age * `Needle gauge` + Age * Practitioner + `Number of IV attempts` * Practitioner, 
-                data = data_subset)
-summary(lm_model_with_interactions)
-```
-
-#### Print linear model without interactions
-
-```{r, fig.align='center'}
-plot(lm_model_without_interactions)
-```
-
-#### Print linear model with interactions
-
-```{r, fig.align='center'}
-plot(lm_model_with_interactions)
-```
 
 \newpage
 
