@@ -559,125 +559,60 @@ print(t_test_subset)
 
 ### Objective 2
 
-#### Interaction plots
-
-```{r, echo=TRUE, out.width="20%"}
-# Only use match subset data
-
-# Convert continuous variables to categorical factors
-data_subset$Age_Group <- cut(data_subset$Age, 
-                             breaks = 2, labels = c("5-10", "11-16")) 
-data_subset$IV_Attempts_Group <- cut(data_subset$`Number of IV attempts`, 
-                                     breaks = 2, labels = c("Low", "High"))
-
-# Make sure all categorical variables are treated as factors
-data_subset$`Needle gauge` <- as.factor(data_subset$`Needle gauge`)
-data_subset$Sex <- as.factor(data_subset$Sex)
-data_subset$Practitioner <- as.factor(data_subset$Practitioner)
-
-# List of categorical variables
-categorical_vars <- c("Sex", "Age_Group", "IV_Attempts_Group", "Needle gauge", "Practitioner")
-print(paste0("Categorical variables: ", paste(categorical_vars, collapse = ", ")))
-
-# Create interaction plots for all pairs of categorical variables
-for (x_var in categorical_vars) {
-  for (trace_var in categorical_vars) {
-    if (x_var != trace_var) {  # Avoid plotting a variable against itself
-      interaction.plot(x.factor = data_subset[[x_var]],
-                       trace.factor = data_subset[[trace_var]],
-                       response = data_subset$`FPS-R score`,
-                       type = "b",
-                       pch = 19,
-                       xlab = x_var,
-                       ylab = "FPS-R Score",
-                       trace.label = trace_var,
-                       col = c("red", "blue"),
-                       lty = 1,
-                       legend = TRUE,
-                       main = paste("Interaction Plot:", x_var, "vs", trace_var))
-    }
-  }
-}
-
-# Significant interactions: Sex * Age + Sex * `Needle gauge` + Sex * Practitioner
-# + Age * `Needle gauge` + Age * Practitioner + `Number of IV attempts` * Practitioner
+```{r}
+lm_age <- lm(`FPS-R score` ~ Age * factor(Randomization), data = data)
+summary(lm_age)
 ```
 
-#### Histograms for FPS-R score
-
-```{r, echo=TRUE}
-# General function to create plots
-plot_data <- function(data, x_var, y_var = "FPS-R score", x_label = "", y_label = "FPS-R score") {
-  p <- data %>%
-    ggplot(aes(x = !!sym(x_var), y = !!sym(y_var))) +
-    geom_point(size = 2) +
-    scale_y_continuous(breaks = seq(0, 10, by = 1)) +
-    labs(x = x_label, y = y_label) +
-    ggtitle(paste("Distribution of", y_label, "by", x_label))
-
-  print(p)
-}
+```{r}
+# Plot the linear regression line
+ggplot(data, aes(x = Age, y = `FPS-R score`, color = factor(Randomization))) +
+  # Add the regression line
+  geom_smooth(method = "lm", se = FALSE) +
+  # Set plot labels
+  xlab("Age") +
+  ylab("FPS-R score") +
+  labs(color = "Randomization", title = "Figure 2: Linear Regression line for Control and Study Group") +
+  scale_color_manual(values = c("#219ebc", "#fb8500"),
+                     labels = c("Control Group", "Study Group")) +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 ```
 
-```{r, echo=TRUE, out.width="75%", fig.align='center'}
-# Plot for Age
-plot_data(data, "Age", x_label = "Age")
+```{r}
+# Number of IV Attempts analysis
 
-# Plot for Sex
-plot_data(data, "Sex", x_label = "Sex")
+# Summary statistics
+data_control <- data[data$`Randomization` == 1,]
+data_study <- data[data$`Randomization` == 2,]
+summary(data_control$`Number of IV attempts`)
+summary(data_study$`Number of IV attempts`)
 
-# Plot for Practitioner
-plot_data(data, "Practitioner", x_label = "Practitioner")
+# Mean for study group decreases instead
 
-# Plot for Number of IV attempts
-plot_data(data, "Number of IV attempts", x_label = "Number of IV attempts")
+# Bar Chart for IV attempts
+bar <- data %>%
+  mutate(Group = ifelse(Randomization == 1, "Control Group", "Study Group")) %>%
+  ggplot(aes(x = `Number of IV attempts`, fill = Group)) +
+  geom_bar(position = "dodge") +
+  scale_fill_manual(values = c("Control Group" = "#219ebc", "Study Group" = "#fb8500")) +
+  labs(title = "Number of IV Attempts", x = "Number of IV Attempts",
+    y = "Count", fill = "Group"
+  ) +
+    theme(
+    plot.title = element_text(hjust = 0.5, size = 20, face = "bold"),
+    legend.title = element_text(size = 16),
+    legend.text = element_text(size = 16),
+    axis.title.x = element_text(size = 16),
+    axis.title.y = element_text(size = 16),
+    axis.text.x = element_text(size = 12),
+    axis.text.y = element_text(size = 12)
+  )
 
-# Plot for Needle gauge
-plot_data(data, "Needle gauge", x_label = "Needle gauge")
+print(bar)
 
-# The younger the age, the more concentrated the distribution of pain scores.
-# The fewer the number of IV injections, the more concentrated the high pain scores are.
-```
-
-#### Linear models for FPS-R score
-
-```{r, echo=TRUE}
-data_subset <- data[data$`Match Responses` == 'Yes',]
-
-lm_model_without_interactions <- lm(`FPS-R score` ~ Age + Sex + Practitioner +
-                 `Number of IV attempts` + `Needle gauge`, data = data_subset)
-summary(lm_model_without_interactions)
-
-lm_model_with_interactions <- lm(`FPS-R score` ~ Age + Sex + Practitioner + `Number of IV attempts`
-                + `Needle gauge` + Sex * Age + Sex * `Needle gauge` + Sex * Practitioner
-                + Age * `Needle gauge` + Age * Practitioner + `Number of IV attempts` * Practitioner, 
-                data = data_subset)
-summary(lm_model_with_interactions)
-```
-
-#### Print linear model without interactions
-
-```{r, echo=TRUE, fig.align='center'}
-plot(lm_model_without_interactions)
-```
-
-#### Print linear model with interactions
-
-```{r, echo=TRUE, fig.align='center'}
-plot(lm_model_with_interactions)
-```
-
-#### Linear regression by two groups
-
-```{r, echo=TRUE}
-control <- subset(data_subset, Randomization == 1)
-study <- subset(data_subset, Randomization == 2)
-
-lm_model_c <- lm(`FPS-R score` ~ Age + `Number of IV attempts` + `Needle gauge`, data = control)
-lm_model_s <- lm(`FPS-R score` ~ Age + `Number of IV attempts` + `Needle gauge`, data = study)
-summary(lm_model_c)
-summary(lm_model_s)
-
+# No need further testing, from EDA we can see that the study group 
+# didn't increase number of IV attempts (in fact, it decreases)
+# (note: we did try doing t-test for confirmation and we can't reject null)
 ```
 
 ### Objective 3
