@@ -54,7 +54,7 @@ table(data$`Reaction to skin puncture`)
 # Secondary Objective 1: Linear regression of age*randomization group
 
 lm_age <- lm(`FPS-R score` ~ Age * factor(Randomization), data = data)
-summary(lm_age)
+tidy(summary(lm_age))
 ```
 ```{r}
 # Plot the linear regression line
@@ -64,7 +64,7 @@ ggplot(data, aes(x = Age, y = `FPS-R score`, color = factor(Randomization))) +
   # Set plot labels
   xlab("Age") +
   ylab("FPS-R score") +
-  labs(color = "Randomization", title = "Figure 2: Linear Regression line for Control and Study Group") +
+  labs(color = "Randomization", title = "Linear Regression Model for Control and Study Group") +
   scale_color_manual(values = c("#219ebc", "#fb8500"),
                      labels = c("Control Group", "Study Group")) +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
@@ -88,17 +88,11 @@ bar <- data %>%
   ggplot(aes(x = `Number of IV attempts`, fill = Group)) +
   geom_bar(position = "dodge") +
   scale_fill_manual(values = c("Control Group" = "#219ebc", "Study Group" = "#fb8500")) +
-  labs(title = "Number of IV Attempts", x = "Number of IV Attempts",
+  labs(title = "Number of IV Attempts for Control and Study Group", x = "Number of IV Attempts",
     y = "Count", fill = "Group"
   ) +
     theme(
-    plot.title = element_text(hjust = 0.5, size = 20, face = "bold"),
-    legend.title = element_text(size = 16),
-    legend.text = element_text(size = 16),
-    axis.title.x = element_text(size = 16),
-    axis.title.y = element_text(size = 16),
-    axis.text.x = element_text(size = 12),
-    axis.text.y = element_text(size = 12)
+    plot.title = element_text(hjust = 0.5, face = "bold")
   )
 
 print(bar)
