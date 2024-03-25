@@ -55,6 +55,7 @@ table(data$`Reaction to skin puncture`)
 
 lm_age <- lm(`FPS-R score` ~ Age * factor(Randomization), data = data)
 tidy(summary(lm_age))
+plot(lm_age)
 ```
 ```{r}
 # Plot the linear regression line
