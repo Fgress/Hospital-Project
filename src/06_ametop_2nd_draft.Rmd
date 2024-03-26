@@ -337,6 +337,44 @@ Rogers TL, Ostrow CL. The use of EMLA cream to decrease venipuncture pain in chi
 
 ## For client
 
+**Formula**
+
+**Two-Sample T-Test**
+
+Let $x_i$ be the value for one of the response variables in our sample. $x_1, x_2, ..., x_{223}$ are considered as IID sample of size n = 223.
+
+> $H_0$: The mean FPS-R scores for the control and study groups are the same.
+
+> $H_a$: The mean FPS-R score is lower for the study group which is using the vapocoolant spray.
+
+$\bar{x}$ is the sample mean and is the estimate of the response variable, and the $s_x$ is the sample standard deviation.
+
+The formula for the two-sample T-test is:
+
+$$
+t = \frac{\bar{X}_1 - \bar{X}_2}{\frac{s_x} {\sqrt{n}}}
+$$
+
+p-value = $Pr(T > t)$ with degree of freedom = 221.
+
+The *one-sided* confidence interval can be calculated through: $(\bar{x} - t_{221}\times\frac{s}{\sqrt{n}}, \infty)$.
+
+**Linear Regression Model**
+
+Our model to test the relationship between age and randomization (control and study) groups on FPS-R scores is as follows:
+
+$$
+Y = 4.1459 - 0.1640X_1 - 1.6818X_2 + 0.1098X_1*X_2 + \epsilon
+$$
+
+where $\epsilon$ follows $N(0, \sigma^2)$, Y = FPS-R scores, $X_1$ = Age, and
+
+$$
+X_2 = \left\{ \begin{array}{cc} 1 & \text{if the patient is in the study group} \\ 0 & \text{if the patient is in the control group} \end{array}\right.
+$$
+
+From the linear regression, we can get the estimated coefficient and the p-value through R-codes that are presented in Table 2. Using the equation, we can calculate fitted values, which are the predicted values of the FPS-R scores using the data that is used to create the model, to create Figure 2.
+
 \newpage
 
 ## For mentor
