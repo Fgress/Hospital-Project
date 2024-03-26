@@ -435,7 +435,7 @@ plot1 <- data %>% filter(Randomization == 1) %>%
   labs(title = "Control Group FPS-R Scores Boxplot") +
   scale_fill_manual(values = c("Control Group" = "#219ebc")) +
   theme_minimal() +
-  theme(legend.position = "none")
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"), legend.position = "none")
 
 plot2 <- data %>% filter(Randomization == 2) %>%
   ggplot(aes(`FPS-R score`, fill = "Study Group")) +
@@ -443,7 +443,7 @@ plot2 <- data %>% filter(Randomization == 2) %>%
   labs(title = "Study Group FPS-R Scores Boxplot") +
   scale_fill_manual(values = c("Study Group" = "#fb8500")) +
   theme_minimal() +
-  theme(legend.position = "none")
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"), legend.position = "none")
 
 plot1
 plot2
