@@ -430,16 +430,23 @@ head(data)
 ```{r, echo=TRUE, fig.align='center'}
 # Boxplots
 plot1 <- data %>% filter(Randomization == 1) %>%
-  ggplot(aes(`FPS-R score`)) +
-  geom_boxplot() +
-  labs(title = "Control Group Boxplot")
+  ggplot(aes(`FPS-R score`, fill = "Control Group")) +
+  geom_boxplot(alpha = 0.7) +
+  labs(title = "Control Group FPS-R Scores Boxplot") +
+  scale_fill_manual(values = c("Control Group" = "#219ebc")) +
+  theme_minimal() +
+  theme(legend.position = "none")
 
 plot2 <- data %>% filter(Randomization == 2) %>%
-  ggplot(aes(`FPS-R score`)) +
-  geom_boxplot() +
-  labs(title = "Study Group Boxplot")
+  ggplot(aes(`FPS-R score`, fill = "Study Group")) +
+  geom_boxplot(alpha = 0.7) +
+  labs(title = "Study Group FPS-R Scores Boxplot") +
+  scale_fill_manual(values = c("Study Group" = "#fb8500")) +
+  theme_minimal() +
+  theme(legend.position = "none")
 
-grid.arrange(plot1, plot2, ncol = 2, nrow = 1)
+plot1
+plot2
 ```
 
 #### Table
