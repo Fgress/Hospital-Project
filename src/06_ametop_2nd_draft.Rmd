@@ -138,11 +138,15 @@ The two-sample T-Test is used to assess whether the addition of vapocoolant spra
 
 Regarding the second statistical question concerning the impact of age and randomization (study and control) groups on FPS-R scores, we implement a linear regression analysis. This approach enables us to explore the relationship between age, the randomization group, and the combined effect of both age and the randomization group on the FPS-R scores. In constructing our model, we ensure that the assumptions underlying linear regression are satisfied. These assumptions include linearity, independence, homoscedasticity, and normality of residuals. The statistical significance of the model coefficients is assessed with a p-value threshold of 5% significance level.
 
+\vspace{3mm}
+
 **4.3 Secondary Objective 2: Does the Combination of Ametop with a Vapocoolant Spray Increase the Number of IV Insertion Attempts, Compared to Using Ametop Alone?**
 
 To investigate whether the combination of Ametop with a vapocoolant spray increases the number of IV insertion attempts compared to the application of Ametop alone, we use summary statistics and visually analyze the data using plots. These help us understand the distribution and average number of IV attempts in both the control group (Ametop alone) and the study group (Ametop with vapocoolant spray).
 
 We choose not to conduct statistical tests for this comparison to avoid multiple tests on the same dataset. This can reduce the statistical power of the tests and the probability of detecting the true effect of the study. When multiple tests are performed on the same dataset, the chances of finding significant results by chance increase, thereby reducing the confidence in the findings. Therefore, we rely on visual inspection of the data to draw preliminary conclusions about the impact of the combined treatment on the number of IV insertion attempts.
+
+\vspace{3mm}
 
 **4.4 Secondary Objective 3: The Incidence of Side Effects Due to Ametop by Pie Chart and Frequency Table.**
 
@@ -153,6 +157,8 @@ We then categorize the observed side effects into four distinct groups: "Redness
 # 5. Result
 
 In this section, we present the results of our data analysis. We compared the p-value to the significance level for the two-sample T-Test. Then, we examined a linear regression model on the response variable, using their estimates and p-values. The results are presented in Table 1, Table 2, Figure 2, Figure 3 and Figure 4. 
+
+\vspace{3mm}
 
 **5.1 Main Objective: Does the Combination of Ametop with a Vapocoolant Spray Significantly Reduce the Discomfort Experienced by Pediatric Patients During IV Insertions, Compared to Using Ametop Alone?**
 
@@ -171,6 +177,8 @@ kable(table_data, caption = "Control Group and Study Group Two-Sample T-Test", f
 ```
 
 The mean FPS-R score for the group with Ametop alone is 2.6909, while the mean FPS-R score for the group with the combination of Ametop and vapocoolant spray is 1.9292. The test yields a p-value of 0.02258, which is below the 5% significance threshold. This allows us to reject the null hypothesis at the 5% significance level, indicating a difference in the mean FPS-R scores between the control and study groups. These results support the hypothesis that adding vapocoolant spray may reduce discomfort in pediatric patients.
+
+\vspace{3mm}
 
 **5.2 Secondary Objective 1: The Relationship between Age and Randomization (Control and Study) Groups on FPS-R Scores.**
 
@@ -194,7 +202,7 @@ Although the estimates for the randomization group and the interaction between a
 
 From the estimates in Table 2, we create a linear regression model that represents the average FPS-R scores among children according to their age and group allocation depicted in Figure 2.
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE, out.width="70%", fig.align='center', fig.cap='Linear Regression Model for Control and Study Group'}
+```{r, echo=FALSE, message=FALSE, warning=FALSE, out.width="65%", fig.align='center', fig.cap='Linear Regression Model for Control and Study Group'}
 # Plot the linear regression line
 ggplot(data, aes(x = Age, y = `FPS-R score`, color = factor(Randomization))) +
   # Add the regression line
@@ -209,6 +217,8 @@ ggplot(data, aes(x = Age, y = `FPS-R score`, color = factor(Randomization))) +
 ```
 
 Examining Figure 2, it is observed that as age increases, the difference in the decrease in FPS-R scores between the study and control groups gets smaller. Notably, the two lines converge around the age of 15, suggesting that the efficacy of vapocoolant spray in reducing pain may not be as pronounced in children aged 15 and 16.
+
+\vspace{3mm}
 
 **5.3 Secondary Objective 2: Does the Combination of Ametop with a Vapocoolant Spray Increase the Number of IV Insertion Attempts, Compared to Using Ametop Alone?**
 
@@ -234,6 +244,8 @@ print(bar)
 Upon examining Figure 3, the distribution of IV attempts, both groups exhibit comparable patterns, with the majority of instances in both groups having a single IV attempt. Quantitatively, the study group, with vapocoolant spray, shows an average of 1.08 IV attempts. This is marginally lower than the control group's average of 1.155 attempts, where only Ametop was applied. Such observations lead us to conclude that there is no increase in the number of IV attempts for the study group when the vapocoolant spray is added.
 
 In summary, through the analysis of simple summary plots and calculation of mean attempts, it becomes evident that the introduction of the vapocoolant spray does not result in an elevated number of IV attempts when combined with Ametop. 
+
+\vspace{3mm}
 
 **5.4 Secondary Objective 3: The Incidence of Side Effects Due to Ametop.**
 
