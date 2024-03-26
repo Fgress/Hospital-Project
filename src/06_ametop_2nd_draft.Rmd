@@ -341,8 +341,6 @@ Rogers TL, Ostrow CL. The use of EMLA cream to decrease venipuncture pain in chi
 
 ## For client
 
-**Formula**
-
 **Two-Sample T-Test**
 
 Let $x_i$ be the value for one of the response variables in our sample. $x_1, x_2, ..., x_{223}$ are considered as IID sample of size n = 223.
