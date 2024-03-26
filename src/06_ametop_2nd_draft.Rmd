@@ -40,11 +40,11 @@ Yimin You
 
 \newpage
 
-# Summary
+# 1. Summary
 
 This study aims to improve pain management for pediatric patients during intravenous (IV) insertions, a common yet distressing procedure. We investigated the effectiveness of two treatments: Ametop gel as a standalone treatment and the combination of Ametop and vapocoolant spray. A randomized controlled experiment was conducted to assess the pain levels of pediatric patients during IV insertions after receiving either Ametop gel alone or a combination of Ametop gel and vapocoolant spray. A two-sample t-test was used to compare changes in pain levels between the two treatment groups, and a linear regression was performed to examine the association between age and pain level. The result of the two-sample t-test indicates that adding vapocoolant spray significantly reduced the discomfort of IV insertions in pediatric patients. Moreover, the regression analysis revealed that younger children experienced more pain. The number of IV attempts and side effects were also evaluated, and the findings showed that adding vapocoolant spray did not increase the number of IV attempts. Overall, the results suggest that the combination of Ametop and vapocoolant spray is more effective than Ametop alone, particularly for younger children.
 
-# Introduction 
+# 2. Introduction 
 
 Intravenous (IV) insertion is an essential medical procedure that is frequently associated with discomfort and pain, particularly in pediatric patients. To mitigate this, BC Children's Hospital currently utilizes Ametop gel, a topical anesthetic that numbs the skin prior to needle insertion, to alleviate pain and ease the process. Despite its efficacy, Ametop gel alone may not suffice, especially in individuals with heightened sensitivity to pain. To provide better medical care for pediatric patients, the hospital is considering the additional use of a vapocoolant spray. This spray acts rapidly to cool and numb the skin and is hypothesized to provide better pain relief during IV insertions. 
 
@@ -56,7 +56,7 @@ To evaluate the effectiveness of adding a vapocoolant spray to Ametop gel, we fo
 
 Furthermore, we want to ensure that the use of vapocoolant spray does not increase the number of IV attempts and to assess the incidence of side effects among pediatric patients. The following sections detail the data description, statistical methods, and the results derived from our analysis.
 
-# Data description 
+# 3. Data description 
 This study retrospectively collected data from 240 pediatric patients undergoing intravenous (IV) insertion. Some participants withdrew from the study for reasons such as itchiness from Ametop and conversion to inhalation induction. Due to inadequate data on pain levels for these instances, it was not feasible to address the missing information with imputation techniques or other methods. Consequently, we excluded these 17 observations, focusing solely on the remaining 223 observations for our research questions. The dataset has several key variables, categorized as follows:
 
 - **Patient Demographics:** This includes variables such as age, gender, and ASA classification, which are crucial for subgroup analysis. Age (5-16 years old) is particularly important for determining if responses to pain management strategies vary among different pediatric age groups.
@@ -67,13 +67,17 @@ This study retrospectively collected data from 240 pediatric patients undergoing
 
 Other than these variables, there were nine controlled variables, encompassing specifications such as an age range of 5-16 years and whether the patient has a needle phobia, to guarantee that participants met a defined set of eligibility criteria.
 
-# Methods
+# 4. Methods
 
 In this analysis, we employ several statistical methods to address our research objectives. We use a two-sample T-test to assess the primary objective of comparing the difference in mean FPS-R scores between the control and study groups. For our first secondary objective, we perform a linear regression analysis to explore the relationship between age and randomization groups on FPS-R scores. To illustrate the second secondary objective, we present a bar graph depicting the number of IV attempts across the two groups. Lastly, we use a pie chart to display the distribution of side effects among all participants, addressing our third secondary objective.
 
-**Main Objective: Does the Combination of Ametop with a Vapocoolant Spray Significantly Reduce the Discomfort Experienced by Pediatric Patients During IV Insertions, Compared to Using Ametop Alone?**
+\vspace{5mm}
+
+**4.1 Main Objective: Does the Combination of Ametop with a Vapocoolant Spray Significantly Reduce the Discomfort Experienced by Pediatric Patients During IV Insertions, Compared to Using Ametop Alone?**
 
 We begin with exploratory data analysis to examine the distribution of the target response variable, the FPS-R scores. Figure 1 displays comparative boxplots for the control and study groups, illustrating the distribution of these FPS-R scores.
+
+\vspace{3mm}
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.height=1.5, fig.align='center', fig.cap = "FPS-R Scores Boxplots of Control (Ametop) and Study (Ametop + Spray) Group"}
 # Read data
@@ -113,7 +117,7 @@ plot1 <- data %>% filter(Randomization == 1) %>%
   labs(title = "Control Group FPS-R Scores Boxplot") +
   scale_fill_manual(values = c("Control Group" = "#219ebc")) +
   theme_minimal() +
-  theme(plot.title = element_text(hjust = 0.5, face = "bold"), legend.position = "none")
+  theme(plot.title = element_text(hjust = 0.5, size = 10, face = "bold"), legend.position = "none")
 
 plot2 <- data %>% filter(Randomization == 2) %>%
   ggplot(aes(`FPS-R score`, fill = "Study Group")) +
@@ -121,7 +125,7 @@ plot2 <- data %>% filter(Randomization == 2) %>%
   labs(title = "Study Group FPS-R Scores Boxplot") +
   scale_fill_manual(values = c("Study Group" = "#fb8500")) +
   theme_minimal() +
-  theme(plot.title = element_text(hjust = 0.5, face = "bold"), legend.position = "none")
+  theme(plot.title = element_text(hjust = 0.5, size = 10, face = "bold"), legend.position = "none")
 
 grid.arrange(plot1, plot2, ncol = 2, nrow = 1)
 ```
@@ -130,27 +134,27 @@ From Figure 1, we observe that the median FPS-R score for both the control and s
 
 The two-sample T-Test is used to assess whether the addition of vapocoolant spray reduces discomfort. This test is applied under the assumption that the differences between the means of the control and study groups follow a Normal distribution. Although the dataset itself is not normally distributed, the sample size is large enough that, according to the Central Limit Theorem (CLT), we can still utilize the T-test. The null hypothesis asserts that the mean FPS-R scores for both groups are the same, while the alternative hypothesis is that the mean FPS-R score is lower for the study group that is using the vapocoolant spray. Consequently, we are employing a one-sided t-test and the significance threshold for the p-value is set at the 5% significance level.
 
-**Secondary Objective 1: The Relationship between Age and Randomization (Control and Study) Groups on FPS-R Scores.**
+**4.2 Secondary Objective 1: The Relationship between Age and Randomization (Control and Study) Groups on FPS-R Scores.**
 
 Regarding the second statistical question concerning the impact of age and randomization (study and control) groups on FPS-R scores, we implement a linear regression analysis. This approach enables us to explore the relationship between age, the randomization group, and the combined effect of both age and the randomization group on the FPS-R scores. In constructing our model, we ensure that the assumptions underlying linear regression are satisfied. These assumptions include linearity, independence, homoscedasticity, and normality of residuals. The statistical significance of the model coefficients is assessed with a p-value threshold of 5% significance level.
 
-**Secondary Objective 2: Does the Combination of Ametop with a Vapocoolant Spray Increase the Number of IV Insertion Attempts, Compared to Using Ametop Alone?**
+**4.3 Secondary Objective 2: Does the Combination of Ametop with a Vapocoolant Spray Increase the Number of IV Insertion Attempts, Compared to Using Ametop Alone?**
 
 To investigate whether the combination of Ametop with a vapocoolant spray increases the number of IV insertion attempts compared to the application of Ametop alone, we use summary statistics and visually analyze the data using plots. These help us understand the distribution and average number of IV attempts in both the control group (Ametop alone) and the study group (Ametop with vapocoolant spray).
 
 We choose not to conduct statistical tests for this comparison to avoid multiple tests on the same dataset. This can reduce the statistical power of the tests and the probability of detecting the true effect of the study. When multiple tests are performed on the same dataset, the chances of finding significant results by chance increase, thereby reducing the confidence in the findings. Therefore, we rely on visual inspection of the data to draw preliminary conclusions about the impact of the combined treatment on the number of IV insertion attempts.
 
-**Secondary Objective 3: The Incidence of Side Effects Due to Ametop by Pie Chart and Frequency Table.**
+**4.4 Secondary Objective 3: The Incidence of Side Effects Due to Ametop by Pie Chart and Frequency Table.**
 
 We begin with exploratory data analysis on all 240 participants of the study, including those who withdrew prior to the study's completion. This approach accounts for patients who withdrew due to experiencing side effects, thereby preserving all incidences of side effects in the dataset.
 
 We then categorize the observed side effects into four distinct groups: "Redness," "Redness and Itching," "Puffiness," and "Pain" to facilitate the quantitative analysis of side effects. We present the findings in a pie chart and frequency table.
 
-# Result
+# 5. Result
 
 In this section, we present the results of our data analysis. We compared the p-value to the significance level for the two-sample T-Test. Then, we examined a linear regression model on the response variable, using their estimates and p-values. The results are presented in Table 1, Table 2, Figure 2, Figure 3 and Figure 4. 
 
-**Main Objective: Does the Combination of Ametop with a Vapocoolant Spray Significantly Reduce the Discomfort Experienced by Pediatric Patients During IV Insertions, Compared to Using Ametop Alone?**
+**5.1 Main Objective: Does the Combination of Ametop with a Vapocoolant Spray Significantly Reduce the Discomfort Experienced by Pediatric Patients During IV Insertions, Compared to Using Ametop Alone?**
 
 For the main objective, we performed a two-sample T-test on the two randomization (control and study) groups and FPS-R scores. The results of the test, including the group means, standard error, and p-value, are shown in Table 1 below.
 
@@ -168,7 +172,7 @@ kable(table_data, caption = "Control Group and Study Group Two-Sample T-Test", f
 
 The mean FPS-R score for the group with Ametop alone is 2.6909, while the mean FPS-R score for the group with the combination of Ametop and vapocoolant spray is 1.9292. The test yields a p-value of 0.02258, which is below the 5% significance threshold. This allows us to reject the null hypothesis at the 5% significance level, indicating a difference in the mean FPS-R scores between the control and study groups. These results support the hypothesis that adding vapocoolant spray may reduce discomfort in pediatric patients.
 
-**Secondary Objective 1: The Relationship between Age and Randomization (Control and Study) Groups on FPS-R Scores.**
+**5.2 Secondary Objective 1: The Relationship between Age and Randomization (Control and Study) Groups on FPS-R Scores.**
 
 For our second statistical question, we built a linear regression model on age, randomization group, and the combined effect of both age and randomization group to find their relationship with the FPS-R scores. The results of the linear regression model are shown in Table 2 below.
 
@@ -190,7 +194,7 @@ Although the estimates for the randomization group and the interaction between a
 
 From the estimates in Table 2, we create a linear regression model that represents the average FPS-R scores among children according to their age and group allocation depicted in Figure 2.
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE, out.width="75%", fig.align='center', fig.cap='Linear Regression Model for Control and Study Group'}
+```{r, echo=FALSE, message=FALSE, warning=FALSE, out.width="70%", fig.align='center', fig.cap='Linear Regression Model for Control and Study Group'}
 # Plot the linear regression line
 ggplot(data, aes(x = Age, y = `FPS-R score`, color = factor(Randomization))) +
   # Add the regression line
@@ -206,7 +210,7 @@ ggplot(data, aes(x = Age, y = `FPS-R score`, color = factor(Randomization))) +
 
 Examining Figure 2, it is observed that as age increases, the difference in the decrease in FPS-R scores between the study and control groups gets smaller. Notably, the two lines converge around the age of 15, suggesting that the efficacy of vapocoolant spray in reducing pain may not be as pronounced in children aged 15 and 16.
 
-**Secondary Objective 2: Does the Combination of Ametop with a Vapocoolant Spray Increase the Number of IV Insertion Attempts, Compared to Using Ametop Alone?**
+**5.3 Secondary Objective 2: Does the Combination of Ametop with a Vapocoolant Spray Increase the Number of IV Insertion Attempts, Compared to Using Ametop Alone?**
 
 The figure below represents the number of IV insertion attempts in the control group compared to the study group with vapocoolant spray. 
 
@@ -231,7 +235,7 @@ Upon examining Figure 3, the distribution of IV attempts, both groups exhibit co
 
 In summary, through the analysis of simple summary plots and calculation of mean attempts, it becomes evident that the introduction of the vapocoolant spray does not result in an elevated number of IV attempts when combined with Ametop. 
 
-**Secondary Objective 3: The Incidence of Side Effects Due to Ametop.**
+**5.4 Secondary Objective 3: The Incidence of Side Effects Due to Ametop.**
 
 First, we want to know the proportions of patients experiencing side effects. Our findings indicate that there are 12 out of 240 patients from the dataset that experience side effects. This finding is shown in Figure 4 pie chart.
 
@@ -314,7 +318,7 @@ kable(side_effects_data, caption = "Frequency Table of Side Effects")
 
 As shown in Table 3 and Table 4, the most common side effect reported for patients was redness, either alone or accompanied by itching.
 
-# Conclusion
+# 6. Conclusion
 
 The primary objective was to determine whether the addition of a vapocoolant spray significantly reduces the discomfort experienced by pediatric patients during IV insertions compared to using Ametop alone. The results suggest that the addition of a vapocoolant spray does indeed significantly reduce the level of pain felt by the participants. A limitation of our study was the omission of observer scores. During data collection, observer scores were also recorded, where a nurse observed and rated the patients' discomfort on a 3-point scale: 'none,' 'slight,' or 'severe.' This rating aimed to capture visible signs of discomfort or pain, ensuring a reliable pain assessment in children who might be playful or might not fully understand the FPS-R pictogram provided. However, after matching the FPS-R scores with the observer scores, only 164 out of 240 datasets remained. Analyzing this subset would have been very interesting, but the study was not designed to include enough participants to adequately power such an analysis. 
 
@@ -355,9 +359,7 @@ $$
 t = \frac{\bar{X}_1 - \bar{X}_2}{\frac{s_x} {\sqrt{n}}}
 $$
 
-p-value = $Pr(T > t)$ with degree of freedom = 221.
-
-The *one-sided* confidence interval can be calculated through: $(\bar{x} - t_{221}\times\frac{s}{\sqrt{n}}, \infty)$.
+We calculated the result using a one-sided test in R, and it is displayed in Table 1.
 
 **Linear Regression Model**
 
