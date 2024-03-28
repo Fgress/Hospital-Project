@@ -69,7 +69,7 @@ Other than these variables, there were nine controlled variables, encompassing s
 
 # 4. Methods
 
-In this analysis, we employ several statistical methods to address our research objectives. We use a two-sample T-test to assess the primary objective of comparing the difference in mean FPS-R scores between the control and study groups. For our first secondary objective, we perform a linear regression analysis to explore the relationship between age and randomization groups on FPS-R scores. To illustrate the second secondary objective, we present a bar graph depicting the number of IV attempts across the two groups. Lastly, we use a pie chart to display the distribution of side effects among all participants, addressing our third secondary objective.
+In this analysis, we employ several statistical methods to address our research objectives. We use a two-sample t-test to assess the primary objective of comparing the difference in mean FPS-R scores between the control and study groups. For our first secondary objective, we perform a linear regression analysis to explore the relationship between age and randomization groups on FPS-R scores. To illustrate the second secondary objective, we present a bar graph depicting the number of IV attempts across the two groups. Lastly, we use a pie chart to display the distribution of side effects among all participants, addressing our third secondary objective.
 
 \vspace{5mm}
 
@@ -132,7 +132,7 @@ grid.arrange(plot1, plot2, ncol = 2, nrow = 1)
 
 From Figure 1, we observe that the median FPS-R score for both the control and study groups is 2. The study group displays a higher concentration of scores at FPS-R scores 0 and 2, resulting in a right-skewed distribution, and FPS-R scores 6 and above are considered outliers.
 
-The two-sample T-Test is used to assess whether the addition of vapocoolant spray reduces discomfort. This test is applied under the assumption that the differences between the means of the control and study groups follow a Normal distribution. Although the dataset itself is not normally distributed, the sample size is large enough that, according to the Central Limit Theorem (CLT), we can still utilize the T-test. The null hypothesis asserts that the mean FPS-R scores for both groups are the same, while the alternative hypothesis is that the mean FPS-R score is lower for the study group that is using the vapocoolant spray. Consequently, we are employing a one-sided t-test and the significance threshold for the p-value is set at the 5% significance level.
+The two-sample t-test is used to assess whether the addition of vapocoolant spray reduces discomfort. This test is applied under the assumption that the differences between the means of the control and study groups follow a Normal distribution. Although the dataset itself is not normally distributed, the sample size is large enough that, according to the Central Limit Theorem (CLT), we can still utilize the t-test. The null hypothesis asserts that the mean FPS-R scores for both groups are the same, while the alternative hypothesis is that the mean FPS-R score is lower for the study group that is using the vapocoolant spray. Consequently, we are employing a one-sided t-test and the significance threshold for the p-value is set at the 5% significance level.
 
 **4.2 Secondary Objective 1: The Relationship between Age and Randomization (Control and Study) Groups on FPS-R Scores.**
 
@@ -156,13 +156,13 @@ We then categorize the observed side effects into four distinct groups: "Redness
 
 # 5. Result
 
-In this section, we present the results of our data analysis. We compared the p-value to the significance level for the two-sample T-Test. Then, we examined a linear regression model on the response variable, using their estimates and p-values. The results are presented in Table 1, Table 2, Figure 2, Figure 3 and Figure 4. 
+In this section, we present the results of our data analysis. We compared the p-value to the significance level for the two-sample t-test. Then, we examined a linear regression model on the response variable, using their estimates and p-values. The results are presented in Table 1, Table 2, Figure 2, Figure 3 and Figure 4. 
 
 \vspace{3mm}
 
 **5.1 Main Objective: Does the Combination of Ametop with a Vapocoolant Spray Significantly Reduce the Discomfort Experienced by Pediatric Patients During IV Insertions, Compared to Using Ametop Alone?**
 
-For the main objective, we performed a two-sample T-test on the two randomization (control and study) groups and FPS-R scores. The results of the test, including the group means, standard error, and p-value, are shown in Table 1 below.
+For the main objective, we performed a two-sample t-test on the two randomization (control and study) groups and FPS-R scores. The results of the test, including the group means, standard error, and p-value, are shown in Table 1 below.
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 table_data <- data.frame(
@@ -345,7 +345,7 @@ Let $x_i$ be the value for one of the response variables in our sample. $x_1, x_
 
 $\bar{x}$ is the sample mean and is the estimate of the response variable, and the $s_x$ is the sample standard deviation.
 
-The formula for the two-sample T-test is:
+The formula for the two-sample t-test is:
 
 $$
 t = \frac{\bar{X}_1 - \bar{X}_2}{\frac{s_x} {\sqrt{n}}}
