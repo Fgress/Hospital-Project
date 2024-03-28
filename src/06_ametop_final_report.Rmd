@@ -82,10 +82,7 @@ We begin with exploratory data analysis to examine the distribution of the targe
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.height=1.5, fig.align='center', fig.cap = "FPS-R Scores Boxplots of Control (Ametop) and Study (Ametop + Spray) Group"}
 # Read data
 file_path <- "../data/Ametop-PE data(new-Alex)(1control 2study).xlsx"
-original_data <- read_excel(file_path)
-
-# Save original data for side effects analysis
-data <- original_data
+data <- read_excel(file_path)
 
 # Remove withdrawn patients
 data <- data[data$`Withdrawn after consent?` != "Yes", ]
@@ -252,7 +249,7 @@ In summary, through the analysis of simple summary plots and calculation of mean
 First, we want to know the proportions of patients experiencing side effects. Our findings indicate that there are 12 out of 240 patients from the dataset that experience side effects. This finding is shown in Figure 4 pie chart.
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.height=3.9, fig.align='center', fig.cap = "Proportion of Observed Side Effects"}
-sizes <- c(95, 5)
+sizes <- c(228, 12)
 labels <- c("No - 95%", "Yes - 5%")
 colors <- c("#06d6a0", "#ef476f")
 
@@ -426,32 +423,6 @@ data$`Reaction to skin puncture` <- gsub("^(Slight|Severe).*", "\\1 Pain",
 table(data$`Reaction to skin puncture`)
 ```
 
-### Data preprocessing
-
-```{r, echo=TRUE}
-# Create new variables for the dataset
-
-# Create 'Observer Number'
-data$`Observer Number` <- case_when(
-  data$`Reaction to skin puncture` == "None" ~ 1,
-  data$`Reaction to skin puncture` == "Slight Pain" ~ 2,
-  data$`Reaction to skin puncture` == "Severe Pain" ~ 3
-)
-
-# Create 'FPS-R Number'
-data$`FPS-R Number` <- case_when(
-  data$`FPS-R score` %in% c(0, 2) ~ 1,
-  data$`FPS-R score` %in% c(4, 6) ~ 2,
-  data$`FPS-R score` %in% c(8, 10) ~ 3
-)
-
-# Create 'Match Responses'
-data$`Match Responses` <- ifelse(data$`Observer Number` == data$`FPS-R Number`, "Yes", "No")
-
-# Create data subset for match data
-data_subset <- data[data$`Match Responses` == 'Yes',]
-```
-
 ```{r, echo=TRUE}
 # Verify data
 head(data)
@@ -483,31 +454,14 @@ plot1
 plot2
 ```
 
-#### Table
-
-```{r, echo=TRUE}
-# Create a table to count matches
-table <- table(data$`Observer Number`, data$`FPS-R Number`)
-
-# Name the rows and columns to reflect the desired format
-rownames(table) <- c("1", "2", "3")
-colnames(table) <- c("1", "2", "3")
-
-# Output the 3x3 table
-cat("Contingency Table of FPS-R Number vs. Observer Number\n")
-cat("Rows: FPS-R Number\n")
-cat("Columns: Observer Number\n\n")
-print(table)
-```
-
 #### T-tests
 
 ```{r, echo=TRUE}
-# Perform t-test on full data
-t_test_full <- t.test(data[data$Randomization == 2, ]$`FPS-R score`,
+# Perform t-test
+t_test <- t.test(data[data$Randomization == 2, ]$`FPS-R score`,
                       data[data$Randomization == 1, ]$`FPS-R score`,
                       alternative = c("less"))
-print(t_test_full)
+print(t_test)
 
 # Conclusion: We should only reject the null hypothesis based on the full dataset.
 ```
