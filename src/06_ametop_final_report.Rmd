@@ -129,7 +129,7 @@ grid.arrange(plot1, plot2, ncol = 2, nrow = 1)
 
 From Figure 1, we observe that the median FPS-R score for both the control and study groups is 2. The study group displays a higher concentration of scores at FPS-R scores 0 and 2, resulting in a right-skewed distribution, and FPS-R scores 6 and above are considered outliers.
 
-The two-sample t-test is used to assess whether the addition of vapocoolant spray reduces discomfort. This test is applied under the assumption that the differences between the means of the control and study groups follow a Normal distribution. Although the dataset itself is not normally distributed, the sample size is large enough that, according to the Central Limit Theorem (CLT), we can still utilize the t-test. The null hypothesis asserts that the mean FPS-R scores for both groups are the same, while the alternative hypothesis is that the mean FPS-R score is lower for the study group that is using the vapocoolant spray. Consequently, we are employing a one-sided t-test and the significance threshold for the p-value is set at the 5% significance level.
+The two-sample t-test is used to assess whether the addition of vapocoolant spray reduces discomfort. This test is applied under the assumption that the differences between the means of the control and study groups follow a Normal distribution. Although the dataset itself is not normally distributed, the sample size is large enough that, according to the Central Limit Theorem (CLT), we can still utilize the t-test. The null hypothesis asserts that the mean FPS-R scores for both groups are the same, while the alternative hypothesis is that the mean FPS-R score is lower for the study group that is using the vapocoolant spray. Consequently, we are employing a one-sided t-test and the level of significance is set at 5%.
 
 **4.2 Secondary Objective 1: The Relationship between Age and Randomization (Control and Study) Groups on FPS-R Scores.**
 
@@ -149,7 +149,7 @@ We choose not to conduct statistical tests for this comparison to avoid multiple
 
 We begin with exploratory data analysis on all 240 participants of the study, including those who withdrew prior to the study's completion. This approach accounts for patients who withdrew due to experiencing side effects, thereby preserving all incidences of side effects in the dataset.
 
-We then categorize the observed side effects into four distinct groups: "Redness," "Redness and Itching," "Puffiness," and "Pain" to facilitate the quantitative analysis of side effects. We present the findings in a pie chart and frequency table.
+We then categorize the observed side effects into four distinct groups: "Redness," "Redness and Itching," "Puffiness," and "Pain" to facilitate the quantitative analysis of side effects. We summarize results with a pie chart and frequency table.
 
 # 5. Result
 
