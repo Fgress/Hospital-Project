@@ -39,6 +39,7 @@ library(gridExtra)
 
 \newpage
 \pagenumbering{roman}
+\setcounter{page}{2}
 
 # Summary
 
@@ -48,6 +49,7 @@ This study aims to improve pain management for pediatric patients during intrave
 \tableofcontents
 
 \newpage
+# List of Illustrations
 \listoffigures
 \listoftables
 
