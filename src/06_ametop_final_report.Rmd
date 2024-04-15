@@ -1,7 +1,18 @@
 ---
 title: "Ametop Alone vs. Ametop and Vapocoolant Spray to Reduce IV Insertion Pain for Pediatric Patients"
-output: pdf_document
+subtitle: | 
+  |
+  | Dr. Louis Scheepers
+  | Investigator and Pediatric Anesthesiologist, BC Children's Hospital, Clinical Associate Professor, Department of Anesthesiology, Pharmacology & Therapeutics, Faculty of Medicine, UBC
+  |
+  | STAT 450: Case Studies in Statistics
+  | Instructors: Keegan Korthauer, Melissa Lee, Rodolfo Lourenzutti
+  | Teaching Assistant: Jonathan Agyeman
+  | Students: Fabiola Grace, Maggie Ruan, Runhe Guo, Yimin You
+  | Department of Statistics, The University of British Columbia
+  |
 date: "15 April 2024"
+output: pdf_document
 header-includes:
    - \usepackage{float}
      \let\origfigure\figure
@@ -23,23 +34,6 @@ library(broom)
 library(tidyverse)
 library(gridExtra)
 ```
-
-\begin{center}
-Dr. Louis Scheepers
-
-Investigator and Pediatric Anesthesiologist, BC Children's Hospital, Clinical Associate Professor, Department of Anesthesiology, Pharmacology \& Therapeutics, Faculty of Medicine, UBC
-
-STAT 450: Case Studies in Statistics
-
-Instructors: Keegan Korthauer, Melissa Lee, Rodolfo Lourenzutti
-
-Teaching Assistant: Jonathan Agyeman
-
-STAT 450 Students: Fabiola Grace, Maggie Ruan, Runhe Guo, Yimin You
-
-Department of Statistics, The University of British Columbia
-
-\end{center}
 
 \pagenumbering{gobble}
 
