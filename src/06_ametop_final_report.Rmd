@@ -70,7 +70,7 @@ Furthermore, we aim to analyze whether the use of vapocoolant spray affects the 
 
 \newpage
 
-# 2. Data description
+# 2. Data Description
 Data were collected from 240 pediatric patients undergoing intravenous (IV) insertion. Some participants withdrew from the study for reasons such as itchiness from Ametop and conversion to inhalation induction. We excluded 17 observations that withdrew from the study, focusing solely on the remaining 223 observations.
 
 The dataset has several key variables, categorized as follows:
@@ -376,7 +376,7 @@ Rogers TL, Ostrow CL. The use of EMLA cream to decrease venipuncture pain in chi
 
 # Appendices
 
-## For client
+## For Client
 
 ### Two-Sample T-Test
 
@@ -414,9 +414,9 @@ From the linear regression, we can get the estimated coefficient and the p-value
 
 \newpage
 
-## For mentor
+## For Mentor
 
-### Data cleaning
+### Data Cleaning
 
 ```{r, echo=TRUE}
 # Read data
@@ -469,7 +469,7 @@ data$`Reaction to skin puncture` <- gsub("^(Slight|Severe).*", "\\1 Pain",
 table(data$`Reaction to skin puncture`)
 ```
 
-### Data preprocessing
+### Data Preprocessing
 
 ```{r, echo=TRUE}
 # Create new variables for the dataset
