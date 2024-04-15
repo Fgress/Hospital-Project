@@ -3,7 +3,6 @@ title: "Ametop Alone vs. Ametop and Vapocoolant Spray to Reduce IV Insertion Pai
 output: pdf_document
 date: "15 April 2024"
 header-includes:
-   - \usepackage{multirow}
    - \usepackage{float}
      \let\origfigure\figure
      \let\endorigfigure\endfigure
