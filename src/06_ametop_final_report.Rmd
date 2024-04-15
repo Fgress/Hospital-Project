@@ -24,8 +24,6 @@ library(tidyverse)
 library(gridExtra)
 ```
 
-\pagenumbering{gobble}
-
 \begin{center}
 Dr. Louis Scheepers
 
@@ -43,11 +41,21 @@ Department of Statistics, The University of British Columbia
 
 \end{center}
 
+\pagenumbering{gobble}
+
 \newpage
+\pagenumbering{roman}
 
 # Summary
 
 This study aims to improve pain management for pediatric patients during intravenous (IV) insertions, a common yet distressing procedure. It investigates the effectiveness of two treatments: Ametop gel as a standalone treatment and the combination of Ametop and vapocoolant spray. A randomized controlled experiment is used to assess the pain levels of pediatric patients during IV insertions after receiving either Ametop gel alone or a combination of Ametop gel and vapocoolant spray. A two-sample t-test is used to compare changes in pain levels between the two treatment groups, and a linear regression is performed to examine the association between age and pain level. The two-sample t-test indicates that adding vapocoolant spray significantly reduces the discomfort of IV insertions in pediatric patients. The regression analysis reveals more pain for younger children and the addition of vapocoolant spray decreases the pain much more for younger children. The evaluation of the number of IV attempts and side effects shows that adding vapocoolant spray does not increase the number of IV attempts. Overall, the combination of Ametop and vapocoolant spray is more effective than Ametop alone, particularly for younger children.
+
+\newpage
+\tableofcontents
+
+\newpage
+\listoffigures
+\listoftables
 
 \newpage
 \pagenumbering{arabic}
@@ -353,7 +361,7 @@ Rogers TL, Ostrow CL. The use of EMLA cream to decrease venipuncture pain in chi
 
 ## For client
 
-**Two-Sample T-Test**
+### Two-Sample T-Test
 
 Let $x_i$ be the value for one of the response variables in our sample. $x_1, x_2, ..., x_{223}$ are considered as IID sample of size n = 223.
 
@@ -371,7 +379,7 @@ $$
 
 We calculated the result using a one-sided test in R, and it is displayed in Table 1.
 
-**Linear Regression Model**
+### Linear Regression Model
 
 Our model to test the relationship between age and randomization (control and study) groups on FPS-R scores is as follows:
 
