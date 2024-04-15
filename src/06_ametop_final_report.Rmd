@@ -101,7 +101,10 @@ The exploratory data analysis examines the distribution of the target response v
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.height=1.5, fig.align='center', fig.cap = "FPS-R Scores Boxplots of Control (Ametop) and Study (Ametop + Spray) Group"}
 # Read data
 file_path <- "../data/Ametop-PE data(new-Alex)(1control 2study).xlsx"
-data <- read_excel(file_path)
+original_data <- read_excel(file_path)
+
+# Save original data for side effects analysis
+data <- original_data
 
 # Remove withdrawn patients
 data <- data[data$`Withdrawn after consent?` != "Yes", ]
@@ -268,11 +271,29 @@ In summary, through the analysis of simple summary plots and calculation of mean
 First, we want to know the proportions of patients experiencing side effects. Our findings indicate that there are 12 out of 240 patients from the dataset that experience side effects. This finding is shown in Figure 4 pie chart.
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, out.width="100%", fig.align='center', fig.cap = "Proportion of Observed Side Effects"}
-sizes <- c(228, 12)
-labels <- c("No - 95%", "Yes - 5%")
-colors <- c("#06d6a0", "#ef476f")
+# Pie chart draw function with percentages
+draw_pie_chart <- function(all_categories, title) {
+  # Count the occurrences of each category
+  category_counts <- table(all_categories)
 
-pie(sizes, labels = labels, col = colors, main = "Observed Side Effects")
+  # Calculate the percentage for each category
+  percentages <- round(category_counts / sum(category_counts) * 100, 1)
+
+  # Create labels that include both the category name and the percentage
+  labels <- paste(names(category_counts), " - ", percentages, "%", sep="")
+
+  pie(category_counts,
+      main = title,
+      col = c("#06d6a0", "#ef476f"),
+      labels = labels,
+      cex = 1.0)
+}
+
+# Summarize "Any side effects observed?" column
+side_effects_observed_summary <- data.frame(original_data$`Any side effects observed?`)
+
+# Create a pie chart for the observed side effects
+draw_pie_chart(side_effects_observed_summary, "Observed Side Effects")
 ```
 
 As illustrated in Figure 4, 95% of the patients experience no side effects, and 5% of patients experience side effects.
