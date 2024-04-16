@@ -362,11 +362,15 @@ As shown in Table 3 and Table 4, the most common side effect reported by patient
 
 The study investigates whether the addition of a vapocoolant spray significantly reduces IV insertion pain for pediatric patients compared to using only Ametop gel. The result shows that the combination of Ametop and vapocoolant spray significantly reduces discomfort in pediatric patients compared to Ametop alone. This combination is particularly effective in younger children and may not be necessary for children aged 15 and 16. Additionally, the addition of spray does not increase the number of IV attempts. In terms of side effects, 95% of patients report no adverse effects from Ametop. Among the 5% of patients experiencing side effects, the most common side effect is redness, either alone or accompanied by itching.
 
+\vspace{3mm}
+
 **5.2 Limitation**
 
 The baseline pain level was not recorded during data collection. External factors, such as existing headaches or body aches, might have influenced the patients' perception of pain during IV insertion, potentially biasing their FPS-R scores.
 
 Additionally, it is possible that several factors, such as age, the number of IV attempts, and the practitioner’s role, could significantly impact the FPS-R scores. However, restricting these variables within the current dataset would yield an insufficient amount of data for robust analysis.
+
+\vspace{3mm}
 
 **5.3 Recommendation**
 
