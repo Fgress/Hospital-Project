@@ -377,7 +377,7 @@ Rogers TL, Ostrow CL. The use of EMLA cream to decrease venipuncture pain in chi
 
 ## For Client
 
-### Two-Sample T-Test
+**Two-Sample T-Test**
 
 Let $x_i$ be the value for one of the response variables in our sample. $x_1, x_2, ..., x_{223}$ are considered as IID sample of size n = 223.
 
@@ -395,7 +395,7 @@ $$
 
 We calculated the result using a one-sided test in R, and it is displayed in Table 1.
 
-### Linear Regression Model
+**Linear Regression Model**
 
 Our model to test the relationship between age and randomization (control and study) groups on FPS-R scores is as follows:
 
@@ -415,7 +415,7 @@ From the linear regression, we can get the estimated coefficient and the p-value
 
 ## For Mentor
 
-### Data Cleaning
+**Data Cleaning**
 
 ```{r, echo=TRUE}
 # Read data
@@ -468,7 +468,7 @@ data$`Reaction to skin puncture` <- gsub("^(Slight|Severe).*", "\\1 Pain",
 table(data$`Reaction to skin puncture`)
 ```
 
-### Data Preprocessing
+**Data Preprocessing**
 
 ```{r, echo=TRUE}
 # Create new variables for the dataset
@@ -499,9 +499,9 @@ data_subset <- data[data$`Match Responses` == 'Yes',]
 head(data)
 ```
 
-### Main Objective
+**Main Objective**
 
-#### Boxplots
+**Boxplots**
 
 ```{r, echo=TRUE, fig.align='center'}
 # Boxplots
@@ -525,7 +525,7 @@ plot1
 plot2
 ```
 
-#### Table
+**Table**
 
 ```{r, echo=TRUE}
 # Create a table to count matches
@@ -542,7 +542,7 @@ cat("Columns: Observer Number\n\n")
 print(table)
 ```
 
-#### T-tests
+**T-tests**
 
 ```{r, echo=TRUE}
 # Perform t-test
@@ -554,7 +554,7 @@ print(t_test)
 # Conclusion: We should only reject the null hypothesis based on the full dataset.
 ```
 
-### Secondary Objective 1: Linear Regression of Age * Randomization Group
+**Secondary Objective 1: Linear Regression of Age * Randomization Group**
 
 ```{r, echo=TRUE, fig.align='center'}
 lm_age <- lm(`FPS-R score` ~ Age * factor(Randomization), data = data)
@@ -576,7 +576,7 @@ ggplot(data, aes(x = Age, y = `FPS-R score`, color = factor(Randomization))) +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 ```
 
-### Secondary Objective 2: Number of IV Attempts Analysis
+**Secondary Objective 2: Number of IV Attempts Analysis**
 
 ```{r, echo=TRUE, fig.align='center'}
 # Summary statistics
@@ -607,9 +607,9 @@ print(bar)
 # (note: we did try doing t-test for confirmation and we can't reject null)
 ```
 
-### Secondary Objective 3: Side Effects
+**Secondary Objective 3: Side Effects**
 
-#### Pie chart for Observed side effects
+**Pie chart for Observed side effects**
 
 ```{r, echo=TRUE, fig.align='center'}
 # Pie chart draw function with percentages
@@ -677,7 +677,7 @@ categorize_effects <- function(effect) {
 }
 ```
 
-#### Frequency table for observed side effects
+**Frequency table for observed side effects**
 
 ```{r, echo=TRUE, fig.align='center'}
 # Get the side effects data
