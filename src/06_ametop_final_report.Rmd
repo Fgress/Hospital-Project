@@ -2,14 +2,20 @@
 title: "Ametop Alone vs. Ametop and Vapocoolant Spray to Reduce IV Insertion Pain for Pediatric Patients"
 subtitle: | 
   |
+  |
+  |
+  |
   | Dr. Louis Scheepers
   | Investigator and Pediatric Anesthesiologist, BC Children's Hospital, Clinical Associate Professor, Department of Anesthesiology, Pharmacology & Therapeutics, Faculty of Medicine, UBC
+  |
+  |
   |
   | STAT 450: Case Studies in Statistics
   | Instructors: Keegan Korthauer, Melissa Lee, Rodolfo Lourenzutti
   | Teaching Assistant: Jonathan Agyeman
   | Students: Fabiola Grace, Maggie Ruan, Runhe Guo, Yimin You
   | Department of Statistics, The University of British Columbia
+  |
   |
 date: "15 April 2024"
 output: pdf_document
@@ -99,7 +105,7 @@ The exploratory data analysis examines the distribution of the target response v
 
 \vspace{3mm}
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.height=1.5, fig.align='center', fig.cap = "FPS-R Scores Boxplots of Control (Ametop) and Study (Ametop + Spray) Group"}
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.height=1.5, fig.align='center', fig.cap = "FPS-R Scores Boxplots for Control and Study Group"}
 # Read data
 file_path <- "../data/Ametop-PE data(new-Alex)(1control 2study).xlsx"
 original_data <- read_excel(file_path)
