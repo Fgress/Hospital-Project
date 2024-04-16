@@ -385,7 +385,7 @@ Rogers TL, Ostrow CL. The use of EMLA cream to decrease venipuncture pain in chi
 
 # Appendices
 
-## For Client
+## Appendix for Client
 
 **Two-Sample T-Test**
 
@@ -423,7 +423,7 @@ From the linear regression, we can get the estimated coefficient and the p-value
 
 \newpage
 
-## For Mentor
+## Appendix for Mentor
 
 **Data Cleaning**
 
