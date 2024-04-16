@@ -71,7 +71,8 @@ Furthermore, we aim to analyze whether the use of vapocoolant spray affects the 
 \newpage
 
 # 2. Data Description
-Data were collected from 240 pediatric patients undergoing intravenous (IV) insertion. Some participants withdrew from the study for reasons such as itchiness from Ametop and conversion to inhalation induction. We excluded 17 participants that withdrew from the study, focusing solely on the remaining 223 observations.
+
+Data were collected from 240 pediatric patients undergoing intravenous (IV) insertion. Some participants withdrew from the study for reasons such as itchiness from Ametop and conversion to inhalation induction. We excluded 17 participants who withdrew from the study, focusing solely on the remaining 223 observations.
 
 The dataset has several key variables, categorized as follows:
 
@@ -215,6 +216,8 @@ kable(regression_table, caption = "Linear Regression Model Output", format = "ma
 
 Our findings indicate that age is a significant factor in FPS-R scores, as suggested by the p-value in Table 2. The model suggests that older children experience less pain during IV insertion. Specifically, with each additional year of age, the FPS-R scores decrease by an average of 0.1640 in the control group and by an average of 0.0542 in the study group.
 
+Compared to the control group, children in the study group experienced a greater decrease in FPS-R scores by an average of 1.6818. This matches our earlier findings for the main objective that vapocoolant spray is effective in reducing pain levels in IV insertions for children.
+
 Although the estimates for the randomization group and the interaction between age and the randomization group are not statistically significant, they still provide valuable insights. From the estimates in Table 2, a linear regression model is created which represents the average FPS-R scores among children according to their age and group allocation, as depicted in Figure 2.
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, out.width="100%", fig.align='center', fig.cap='Linear Regression Model for Control and Study Group'}
@@ -355,7 +358,7 @@ The study investigates whether the addition of a vapocoolant spray significantly
 
 **5.2 Limitation**
 
-The base pain level was not set or recorded during data collection. External factors, such as existing headaches or body aches, could have influenced the patients' perception of pain during IV insertion, potentially biasing their FPS-R scores.
+The baseline pain level was not recorded during data collection. External factors, such as existing headaches or body aches, might have influenced the patients' perception of pain during IV insertion, potentially biasing their FPS-R scores.
 
 Additionally, it is possible that several factors, such as age, the number of IV attempts, and the practitioner’s role, could significantly impact the FPS-R scores. However, restricting these variables within the current dataset would yield an insufficient amount of data for robust analysis.
 
