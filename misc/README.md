@@ -1,1 +1,0 @@
-This file contains miscellaneous files, such as plots and meeting notes.
